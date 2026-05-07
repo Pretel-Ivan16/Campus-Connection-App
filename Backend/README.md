@@ -341,7 +341,7 @@ El modelo Post incluye:
 
 ---
 
-### ✅ Fase 3: Autenticación (EN PROGRESO)
+### ✅ Fase 3: Autenticación (COMPLETADA 100%)
 
 **Objetivos:**
 
@@ -352,17 +352,19 @@ El modelo Post incluye:
 - [x] Implementar POST /auth/register
 - [x] Implementar GET /auth/verify-email/:token
 - [x] Implementar POST /auth/login
-- [ ] Crear middleware de autenticación
+- [x] Crear middleware de autenticación
 
 **Archivos Creados:**
 
-| Archivo              | Descripción                                                               |
-| -------------------- | ------------------------------------------------------------------------- |
-| `hash.js`            | Utilidades de hash con bcrypt (hashPassword, comparePassword)             |
-| `jwt.js`             | Utilidades de JWT (generateToken, verifyToken, generateVerificationToken) |
-| `email.js`           | Utilidades de email con nodemailer (sendVerificationEmail, sendEmail)     |
-| `auth.service.js`    | Servicio de autenticación (registerUser, loginUser, verifyUserEmail)      |
-| `auth.controller.js` | Controladores de endpoints (register, verifyEmail, login, getProfile)     |
+| Archivo              | Descripción                                                                       |
+| -------------------- | --------------------------------------------------------------------------------- |
+| `hash.js`            | Utilidades de hash con bcrypt (hashPassword, comparePassword)                     |
+| `jwt.js`             | Utilidades de JWT (generateToken, verifyToken, generateVerificationToken)         |
+| `email.js`           | Utilidades de email con nodemailer (sendVerificationEmail, sendEmail)             |
+| `auth.service.js`    | Servicio de autenticación (registerUser, loginUser, verifyUserEmail)              |
+| `auth.controller.js` | Controladores de endpoints (register, verifyEmail, login, getProfile)             |
+| `auth.routes.js`     | Rutas de autenticación (POST register, GET verify-email, POST login, GET profile) |
+| `auth.middleware.js` | Middleware JWT para proteger rutas (authMiddleware, optionalAuthMiddleware)       |
 
 **Detalles de hash.js:**
 
@@ -412,7 +414,375 @@ El archivo incluye:
 ✅ Utilidades de hash completadas y listas
 ✅ Utilidades de JWT completadas y listas
 ✅ Utilidades de email completadas y listas
+✅ Servicios de autenticación completados y listos
+✅ Controladores de autenticación completados y listos
+✅ Rutas de autenticación registradas y listas
+✅ Middleware de autenticación implementado y listo
 ```
+
+---
+
+## 📚 Rutas de Autenticación
+
+### auth.routes.js ✅
+
+**Descripción:**
+
+Define todos los endpoints de autenticación. Las rutas están registradas bajo el prefijo `/auth` en `app.js`.
+
+**Endpoints:**
+
+#### `POST /auth/register`
+
+Registra un nuevo usuario con verificación de email.
+
+**Body (JSON):**
+
+```javascript
+{
+  email: "user@example.com",          // string, requerido
+  password: "securePassword123",      // string, requerido (mín 6 caracteres)
+  frontendUrl: "http://localhost:3000" // string, opcional
+}
+```
+
+**Response 201 (Éxito):**
+
+```javascript
+{
+  success: true,
+  data: {
+    userId: "507f1f77bcf86cd799439011",
+    email: "user@example.com",
+    isVerified: false
+  },
+  message: "User registered successfully. Check your email to verify."
+}
+```
+
+**Response 400 (Email/password missing):**
+
+```javascript
+{
+  success: false,
+  message: "Email and password are required"
+}
+```
+
+**Response 409 (Email duplicado):**
+
+```javascript
+{
+  success: false,
+  message: "This email is already registered"
+}
+```
+
+**Validaciones:**
+
+- ✅ Email y password requeridos
+- ✅ Email debe ser válido (regex)
+- ✅ Password mínimo 6 caracteres
+- ✅ Email debe ser único
+
+**Flujo:**
+
+1. Validar inputs
+2. Verificar que email no exista
+3. Hashear contraseña con bcrypt
+4. Crear usuario con `isVerified: false`
+5. Generar token de verificación
+6. Enviar email con link de verificación
+7. Retornar datos del usuario (sin password)
+
+---
+
+#### `GET /auth/verify-email/:token`
+
+Verifica el email del usuario usando el token de verificación.
+
+**Parámetros URL:**
+
+- `token` - Token JWT de verificación (válido por 24 horas)
+
+**Ejemplo:**
+
+```
+GET /auth/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response 200 (Éxito):**
+
+```javascript
+{
+  success: true,
+  data: {
+    userId: "507f1f77bcf86cd799439011",
+    email: "user@example.com",
+    isVerified: true
+  },
+  message: "Email verified successfully. You can now login."
+}
+```
+
+**Response 400 (Token missing):**
+
+```javascript
+{
+  success: false,
+  message: "Verification token is required"
+}
+```
+
+**Response 401 (Token inválido o expirado):**
+
+```javascript
+{
+  success: false,
+  message: "Invalid or expired verification token"
+}
+```
+
+**Flujo:**
+
+1. Validar que token existe
+2. Decodificar y verificar JWT
+3. Buscar usuario con ese token de verificación
+4. Marcar como `isVerified: true`
+5. Eliminar token de verificación
+6. Guardar cambios
+7. Retornar datos del usuario
+
+---
+
+#### `POST /auth/login`
+
+Autentica un usuario y devuelve JWT de acceso.
+
+**Body (JSON):**
+
+```javascript
+{
+  email: "user@example.com",
+  password: "securePassword123"
+}
+```
+
+**Response 200 (Éxito):**
+
+```javascript
+{
+  success: true,
+  data: {
+    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    userId: "507f1f77bcf86cd799439011",
+    email: "user@example.com"
+  },
+  message: "Login successful"
+}
+```
+
+**Response 400 (Missing inputs):**
+
+```javascript
+{
+  success: false,
+  message: "Email and password are required"
+}
+```
+
+**Response 401 (Invalid credentials):**
+
+```javascript
+{
+  success: false,
+  message: "Invalid email or password"
+}
+```
+
+**Response 403 (Email not verified):**
+
+```javascript
+{
+  success: false,
+  message: "Please verify your email before logging in"
+}
+```
+
+**Flujo:**
+
+1. Validar email y password
+2. Buscar usuario por email (incluir password)
+3. Comparar contraseña con bcrypt
+4. Verificar que `isVerified: true`
+5. Generar JWT con userId y email
+6. Retornar token con expiración 24h
+
+---
+
+#### `GET /auth/profile` ⚠️
+
+Obtiene los datos del usuario autenticado.
+
+**⚠️ REQUIERE AUTENTICACIÓN**
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response 200 (Éxito):**
+
+```javascript
+{
+  success: true,
+  data: {
+    userId: "507f1f77bcf86cd799439011",
+    email: "user@example.com",
+    isVerified: true,
+    createdAt: "2026-05-07T10:30:00.000Z"
+  },
+  message: "Profile retrieved successfully"
+}
+```
+
+**Response 401 (Not authenticated):**
+
+```javascript
+{
+  success: false,
+  message: "Authorization header is missing"
+}
+```
+
+**Response 401 (Invalid token):**
+
+```javascript
+{
+  success: false,
+  message: "Invalid token"
+}
+```
+
+**Flujo:**
+
+1. Middleware extrae y valida JWT
+2. Agrega datos del usuario a `req.user`
+3. Controlador busca usuario por ID
+4. Retorna datos del usuario
+
+---
+
+## 🔐 Middleware de Autenticación
+
+### auth.middleware.js ✅
+
+**Descripción:**
+
+Middleware para validar JWT y proteger rutas que requieren autenticación.
+
+**Funciones exportadas:**
+
+#### `authMiddleware`
+
+Middleware que requiere autenticación JWT. Bloquea la petición si no hay token válido.
+
+**Uso en rutas:**
+
+```javascript
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+
+// Proteger una ruta
+router.post("/posts", authMiddleware, createPost);
+```
+
+**Headers esperados:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Proceso:**
+
+1. Lee header `Authorization`
+2. Valida formato `Bearer <token>`
+3. Extrae token
+4. Verifica y decodifica JWT
+5. Agrega `req.user` con userId, email, iat, exp
+6. Continúa al siguiente middleware/controlador
+
+**Si hay error:**
+
+- Sin Authorization header → 401 "Authorization header is missing"
+- Formato incorrecto → 401 "Invalid authorization header format"
+- Token expirado → 401 "Token has expired"
+- Token inválido → 401 "Invalid token"
+
+**Ejemplo de req.user después del middleware:**
+
+```javascript
+req.user = {
+  userId: "507f1f77bcf86cd799439011",
+  email: "user@example.com",
+  iat: 1715068200,
+  exp: 1715154600,
+};
+```
+
+---
+
+#### `optionalAuthMiddleware`
+
+Middleware que intenta autenticar pero NO bloquea si falla. Útil para endpoints que funcionan tanto para usuarios autenticados como anónimos.
+
+**Uso en rutas:**
+
+```javascript
+// Endpoint que funciona con o sin autenticación
+router.get("/posts", optionalAuthMiddleware, getPosts);
+
+// En el controlador:
+if (req.user) {
+  // Usuario autenticado
+} else {
+  // Usuario anónimo
+}
+```
+
+**Diferencia con authMiddleware:**
+
+- `authMiddleware` → Requiere token válido (bloquea sin él)
+- `optionalAuthMiddleware` → Token opcional (continúa aunque falle)
+
+**Proceso:**
+
+1. Intenta leer y validar JWT
+2. Si hay token válido → agrega `req.user`
+3. Si no hay token o es inválido → continúa sin autenticación
+4. Siempre continúa al siguiente middleware/controlador
+
+---
+
+#### `requireRole(role)` ⚠️
+
+**Estado:** Función reservada para futuro (actualmente no implementada)
+
+Cuando los usuarios tengan roles (admin, moderator, etc.), este middleware validará que tengan permiso.
+
+```javascript
+// Ejemplo para futuro:
+router.delete("/posts/:id", authMiddleware, requireRole("admin"), deletePost);
+```
+
+---
+
+**Estado Actual:**
+
+```
+✅ authMiddleware implementado y listo
+✅ optionalAuthMiddleware implementado y listo
+⏳ requireRole (reservado para futuro)
 
 ---
 
@@ -463,9 +833,11 @@ El archivo incluye:
 Al iniciar el servidor con `npm run dev`, se obtiene el siguiente error:
 
 ```
+
 SyntaxError: The requested module './environment.config.js' does not
 provide an export named 'config'
-```
+
+````
 
 **Causa Raíz:**
 
@@ -473,7 +845,7 @@ En `environment.config.js` se estaba exportando:
 
 ```javascript
 export const ENVIRONMENT = { ... }
-```
+````
 
 Pero en `mongoDB.config.js` se importaba:
 
@@ -594,11 +966,12 @@ Verifica que la API está funcionando.
 
 ### Autenticación (Próximo)
 
-| Método | Endpoint                    | Descripción             |
-| ------ | --------------------------- | ----------------------- |
-| POST   | `/auth/register`            | Registrar nuevo usuario |
-| GET    | `/auth/verify-email/:token` | Verificar email         |
-| POST   | `/auth/login`               | Iniciar sesión          |
+| Método | Endpoint                    | Descripción             | Protegido |
+| ------ | --------------------------- | ----------------------- | --------- |
+| POST   | `/auth/register`            | Registrar nuevo usuario | No        |
+| GET    | `/auth/verify-email/:token` | Verificar email         | No        |
+| POST   | `/auth/login`               | Iniciar sesión          | No        |
+| GET    | `/auth/profile`             | Obtener perfil          | **Sí**    |
 
 ---
 
@@ -1247,7 +1620,7 @@ const user = await getUserByEmail("user@example.com");
 
 ---
 
-## �🔧 Scripts Disponibles
+## �� Scripts Disponibles
 
 ```bash
 # Iniciar en desarrollo (con Nodemon)
@@ -1284,33 +1657,40 @@ npm install
 
 ### Inmediatos (Siguiente Sesión)
 
-1. ✅ **Crear Modelos de Datos** - COMPLETADO
-   - ✅ User schema con Mongoose
-   - ✅ Faculty schema con Mongoose
-   - ✅ Post schema con relaciones
-   - ✅ Relaciones entre modelos establecidas
+1. ✅ **Fase 1: Configuración Inicial** - COMPLETADA
+   - ✅ Express server funcionando
+   - ✅ MongoDB conectado
+   - ✅ .env configurado
+   - ✅ Health endpoint
 
-2. **Implementar Autenticación** (PRÓXIMO)
-   - Utilidades de hash (bcrypt)
-   - Utilidades de JWT
-   - Endpoints de registro, verificación, login
+2. ✅ **Fase 2: Modelos de Datos** - COMPLETADA
+   - ✅ User model con validaciones
+   - ✅ Faculty model con índices
+   - ✅ Post model con relaciones
 
-3. **Crear Repositorios** (PRÓXIMO)
-   - User repository
-   - Faculty repository
-   - Post repository
+3. ✅ **Fase 3: Autenticación** - COMPLETADA (100%)
+   - ✅ Utilidades (hash, JWT, email)
+   - ✅ Servicios (auth.service.js)
+   - ✅ Controladores (auth.controller.js)
+   - ✅ Rutas (auth.routes.js)
+   - ✅ Middleware (auth.middleware.js)
 
-### Corto Plazo
+### Corto Plazo (Próximo)
 
-4. **Implementar Servicios**
-   - Auth service (lógica de autenticación)
-   - Post service (CRUD)
-   - Faculty service
+4. **Fase 4: Repositorios** (PRÓXIMO)
+   - [ ] User repository
+   - [ ] Faculty repository
+   - [ ] Post repository
 
-5. **Crear Controladores**
-   - Auth controllers
-   - Post controllers
-   - Faculty controllers
+5. **Fase 5: Servicios y Controladores de Posts**
+   - [ ] Post service (CRUD)
+   - [ ] Post controller
+   - [ ] Post routes
+
+6. **Fase 6: Servicios y Controladores de Facultades**
+   - [ ] Faculty service
+   - [ ] Faculty controller
+   - [ ] Faculty routes
 
 ### Mediano Plazo
 
@@ -1388,4 +1768,4 @@ ISC
 
 ---
 
-**Última Actualización:** 7 de mayo, 2026 - Modelos User, Faculty, Post + utilidades hash, jwt, email + servicio auth.service.js completados
+**Última Actualización:** 7 de mayo, 2026 - Fase 3 Completada: auth.controller.js, auth.routes.js, auth.middleware.js implementados
