@@ -1,12 +1,12 @@
 import nodemailer from 'nodemailer';
-import { config } from '../config/environment.config.js';
+import { ENVIRONMENT } from '../config/environment.config.js';
 
 // Crear transporte de email
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: config.emailUser,
-    pass: config.emailPass,
+    user: ENVIRONMENT.emailUser,
+    pass: ENVIRONMENT.emailPass,
   },
 });
 
@@ -43,7 +43,7 @@ export const sendVerificationEmail = async (
             por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:
           </p>
           <a href="${verificationLink}" 
-             style="display: inline-block; margin: 20px 0; padding: 12px 30px; 
+            style="display: inline-block; margin: 20px 0; padding: 12px 30px; 
                     background-color: #007bff; color: white; text-decoration: none; 
                     border-radius: 5px; font-weight: bold;">
             Verificar Email
@@ -109,10 +109,10 @@ export const verifyEmailConnection = async () => {
     }
 
     await transporter.verify();
-    console.log('✅ Email service is ready');
+    console.log('Email service is ready');
     return true;
   } catch (error) {
-    console.error('❌ Email service error:', error.message);
+    console.error('Email service error:', error.message);
     return false;
   }
 };

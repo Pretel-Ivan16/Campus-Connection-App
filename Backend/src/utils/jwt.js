@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { config } from '../config/environment.config.js';
+import { ENVIRONMENT } from '../config/environment.config.js';
 
 /**
  * Genera un JWT con el payload y expiración especificada
@@ -14,11 +14,11 @@ export const generateToken = (payload, expiresIn = '24h') => {
       throw new Error('Payload must be an object');
     }
 
-    if (!config.jwtSecret) {
+    if (!ENVIRONMENT.jwtSecret) {
       throw new Error('JWT_SECRET is not defined in environment variables');
     }
 
-    const token = jwt.sign(payload, config.jwtSecret, { expiresIn });
+    const token = jwt.sign(payload, ENVIRONMENT.jwtSecret, { expiresIn });
     return token;
   } catch (error) {
     throw new Error(`Error generating token: ${error.message}`);
@@ -37,14 +37,14 @@ export const verifyToken = (token) => {
       throw new Error('Token is required');
     }
 
-    if (!config.jwtSecret) {
+    if (!ENVIRONMENT.jwtSecret) {
       throw new Error('JWT_SECRET is not defined in environment variables');
     }
 
     // Remover "Bearer " si está presente
     const cleanToken = token.startsWith('Bearer ') ? token.slice(7) : token;
 
-    const decoded = jwt.verify(cleanToken, config.jwtSecret);
+    const decoded = jwt.verify(cleanToken, ENVIRONMENT.jwtSecret);
     return decoded;
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
