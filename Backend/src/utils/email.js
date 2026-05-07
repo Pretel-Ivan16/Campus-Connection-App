@@ -10,14 +10,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-/**
- * Envía un email de verificación con el token al usuario
- * @param {string} email - Correo electrónico del usuario
- * @param {string} verificationToken - Token de verificación
- * @param {string} frontendUrl - URL del frontend para construir link de verificación
- * @returns {Promise<void>} - Promesa que se resuelve cuando se envía el email
- * @throws {Error} - Si ocurre un error al enviar el email
- */
 export const sendVerificationEmail = async (
   email,
   verificationToken,
@@ -71,14 +63,6 @@ export const sendVerificationEmail = async (
   }
 };
 
-/**
- * Envía un email genérico al usuario
- * @param {string} email - Correo electrónico del destinatario
- * @param {string} subject - Asunto del email
- * @param {string} htmlContent - Contenido HTML del email
- * @returns {Promise<void>} - Promesa que se resuelve cuando se envía el email
- * @throws {Error} - Si ocurre un error al enviar el email
- */
 export const sendEmail = async (email, subject, htmlContent) => {
   try {
     if (!email || !subject || !htmlContent) {
@@ -98,10 +82,6 @@ export const sendEmail = async (email, subject, htmlContent) => {
   }
 };
 
-/**
- * Verifica que el transporte de email esté configurado correctamente
- * @returns {Promise<boolean>} - Devuelve true si la conexión es exitosa
- */
 export const verifyEmailConnection = async () => {
   try {
     if (!config.emailUser || !config.emailPass) {

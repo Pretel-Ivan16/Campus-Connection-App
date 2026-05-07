@@ -3,14 +3,6 @@ import { hashPassword, comparePassword } from '../utils/hash.js';
 import { generateToken, generateVerificationToken, verifyToken } from '../utils/jwt.js';
 import { sendVerificationEmail } from '../utils/email.js';
 
-/**
- * Registra un nuevo usuario
- * @param {string} email - Email del usuario
- * @param {string} password - Contraseña en texto plano
- * @param {string} frontendUrl - URL del frontend para link de verificación
- * @returns {Promise<object>} - Objeto con datos del usuario creado (sin password)
- * @throws {Error} - Si el email ya existe o hay error en el registro
- */
 export const registerUser = async (email, password, frontendUrl = 'http://localhost:3000') => {
   try {
     if (!email || !password) {
@@ -54,12 +46,6 @@ export const registerUser = async (email, password, frontendUrl = 'http://localh
   }
 };
 
-/**
- * Verifica el email del usuario usando el token
- * @param {string} token - Token de verificación
- * @returns {Promise<object>} - Objeto con datos del usuario verificado
- * @throws {Error} - Si el token es inválido o el usuario no existe
- */
 export const verifyUserEmail = async (token) => {
   try {
     if (!token) {
@@ -95,13 +81,6 @@ export const verifyUserEmail = async (token) => {
   }
 };
 
-/**
- * Login del usuario
- * @param {string} email - Email del usuario
- * @param {string} password - Contraseña en texto plano
- * @returns {Promise<object>} - Objeto con token JWT y datos del usuario
- * @throws {Error} - Si las credenciales son inválidas o el usuario no está verificado
- */
 export const loginUser = async (email, password) => {
   try {
     if (!email || !password) {
@@ -140,12 +119,6 @@ export const loginUser = async (email, password) => {
   }
 };
 
-/**
- * Obtiene un usuario por su ID
- * @param {string} userId - ID del usuario
- * @returns {Promise<object>} - Datos del usuario (sin password ni verificationToken)
- * @throws {Error} - Si el usuario no existe
- */
 export const getUserById = async (userId) => {
   try {
     if (!userId) {
@@ -169,12 +142,6 @@ export const getUserById = async (userId) => {
   }
 };
 
-/**
- * Obtiene un usuario por su email
- * @param {string} email - Email del usuario
- * @returns {Promise<object>} - Datos del usuario (sin password ni verificationToken)
- * @throws {Error} - Si el usuario no existe
- */
 export const getUserByEmail = async (email) => {
   try {
     if (!email) {

@@ -1,13 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { ENVIRONMENT } from '../config/environment.config.js';
 
-/**
- * Genera un JWT con el payload y expiración especificada
- * @param {object} payload - Datos a incluir en el token (generalmente { userId, email })
- * @param {string} expiresIn - Tiempo de expiración (default: '24h')
- * @returns {string} - Token JWT firmado
- * @throws {Error} - Si ocurre un error durante la generación
- */
 export const generateToken = (payload, expiresIn = '24h') => {
   try {
     if (!payload || typeof payload !== 'object') {
@@ -25,12 +18,6 @@ export const generateToken = (payload, expiresIn = '24h') => {
   }
 };
 
-/**
- * Verifica y decodifica un JWT
- * @param {string} token - Token JWT a verificar (puede incluir "Bearer " al inicio)
- * @returns {object} - Payload decodificado del token
- * @throws {Error} - Si el token es inválido o expiró
- */
 export const verifyToken = (token) => {
   try {
     if (!token) {
@@ -57,11 +44,6 @@ export const verifyToken = (token) => {
   }
 };
 
-/**
- * Genera un token de verificación de email con expiración corta
- * @param {string} userId - ID del usuario
- * @returns {string} - Token de verificación
- */
 export const generateVerificationToken = (userId) => {
   try {
     if (!userId) {

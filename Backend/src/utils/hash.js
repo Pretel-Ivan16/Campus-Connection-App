@@ -1,11 +1,5 @@
 import bcrypt from 'bcrypt';
 
-/**
- * Genera un hash seguro de la contraseña usando bcrypt
- * @param {string} password - Contraseña en texto plano
- * @returns {Promise<string>} - Promesa que resuelve con el hash de la contraseña
- * @throws {Error} - Si ocurre un error durante el hash
- */
 export const hashPassword = async (password) => {
   try {
     if (!password) {
@@ -20,13 +14,6 @@ export const hashPassword = async (password) => {
   }
 };
 
-/**
- * Compara una contraseña en texto plano con su hash
- * @param {string} password - Contraseña en texto plano
- * @param {string} hashedPassword - Hash de la contraseña almacenado
- * @returns {Promise<boolean>} - Promesa que resuelve con true si coinciden, false si no
- * @throws {Error} - Si ocurre un error durante la comparación
- */
 export const comparePassword = async (password, hashedPassword) => {
   try {
     if (!password || !hashedPassword) {
