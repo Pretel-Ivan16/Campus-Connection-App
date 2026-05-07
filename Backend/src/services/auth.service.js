@@ -1,7 +1,7 @@
 import User from '../models/user.model.js';
-import { hashPassword, comparePassword } from './hash.js';
-import { generateToken, generateVerificationToken, verifyToken } from './jwt.js';
-import { sendVerificationEmail } from './email.js';
+import { hashPassword, comparePassword } from '../utils/hash.js';
+import { generateToken, generateVerificationToken, verifyToken } from '../utils/jwt.js';
+import { sendVerificationEmail } from '../utils/email.js';
 
 /**
  * Registra un nuevo usuario
