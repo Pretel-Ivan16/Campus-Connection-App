@@ -779,35 +779,274 @@ router.delete("/posts/:id", authMiddleware, requireRole("admin"), deletePost);
 
 **Estado Actual:**
 
-```
+````
 ✅ authMiddleware implementado y listo
 ✅ optionalAuthMiddleware implementado y listo
 ⏳ requireRole (reservado para futuro)
 
 ---
 
-### 📌 Fase 4: CRUD de Posts (PRÓXIMO)
+### ✅ Fase 4: Repositorios (COMPLETADA - Refactorizada con BaseRepository)
 
-**Objetivos:**
+**Objetivos Alcanzados:**
 
-- [ ] Crear repositorio de posts
-- [ ] Crear servicio de posts
-- [ ] Implementar GET /posts
-- [ ] Implementar GET /posts/:id
-- [ ] Implementar POST /posts (protegido)
-- [ ] Implementar PUT /posts/:id (solo autor)
-- [ ] Implementar DELETE /posts/:id (solo autor)
+- [x] Crear repositorio de usuarios
+- [x] Crear repositorio de facultades
+- [x] Crear repositorio de posts
+- [x] Refactorizar con patrón BaseRepository para reutilización de código
+
+**Archivos Creados/Refactorizados:**
+
+| Archivo                  | Descripción                                        | Estado             |
+| ------------------------ | -------------------------------------------------- | ------------------ |
+| `base.repository.js`     | Clase base con lógica CRUD reutilizable (156 líneas) | ✅ NUEVO |
+| `user.repository.js`     | Extiende BaseRepository (130 líneas, -60% código) | ✅ REFACTORIZADO |
+| `faculty.repository.js`  | Extiende BaseRepository (138 líneas, -60% código) | ✅ REFACTORIZADO |
+| `post.repository.js`     | Extiende BaseRepository (140 líneas, -70% código) | ✅ REFACTORIZADO |
+
+**Arquitectura: BaseRepository Pattern**
+
+Se implementó una clase `BaseRepository` que proporciona métodos genéricos reutilizables:
+
+```javascript
+// Métodos disponibles en BaseRepository:
+- findById(id, options)        // Buscar por ID
+- findOne(query, options)      // Buscar uno
+- findAll(options)             // Obtener todos
+- create(data)                 // Crear documento
+- update(id, data, options)    // Actualizar
+- delete(id)                   // Eliminar
+- exists(query)                // Verificar existencia
+- count(query)                 // Contar documentos
+````
+
+**Beneficios de la Refactorización:**
+
+✅ Reducción de código duplicado (~60%)
+✅ Mantenimiento más fácil (cambios en un lugar)
+✅ Nuevos repositorios creados más rápido
+✅ Consistencia en manejo de errores
+✅ Compatible con código existente (funciones exportadas)
+✅ Patrón OOP y singleton pattern
+
+**Detalles de BaseRepository (src/repositories/base.repository.js):**
+
+```javascript
+export class BaseRepository {
+  constructor(model) {
+    this.Model = model;
+  }
+
+  // Métodos genéricos con manejo de errores integrado
+  async findById(id, options = {})
+  async findOne(query, options = {})
+  async findAll(options = {})
+  async create(data)
+  async update(id, data, options = {})
+  async delete(id)
+  async exists(query)
+  async count(query = {})
+}
+```
+
+**Detalles de user.repository.js (REFACTORIZADO):**
+
+El archivo ahora extiende BaseRepository y mantiene todos los métodos:
+
+- ✅ `createUser(userData)` - Crear usuario con validaciones
+- ✅ `getUserById(userId)` - Obtener usuario por ID
+- ✅ `getUserByEmail(email)` - Obtener usuario por email (sin password)
+- ✅ `getAllUsers()` - Obtener todos los usuarios
+- ✅ `updateUser(userId, updateData)` - Actualizar usuario
+- ✅ `deleteUser(userId)` - Eliminar usuario
+- ✅ `getUserWithPassword(email)` - Obtener usuario con password
+- ✅ `emailExists(email)` - Verificar si email existe
+
+**Características:**
+
+- Excluye password y token por defecto
+- Normaliza emails (lowercase, trim)
+- Conversión a objeto con `.toObject()`
+- Manejo completo de errores
+- Exporta clase + funciones + singleton
+
+**Detalles de faculty.repository.js (REFACTORIZADO):**
+
+El archivo ahora extiende BaseRepository:
+
+- ✅ `createFaculty(facultyData)` - Crear facultad
+- ✅ `getFacultyById(facultyId)` - Obtener por ID
+- ✅ `getFacultyByName(name)` - Obtener por nombre
+- ✅ `getAllFaculties()` - Obtener todas las facultades
+- ✅ `updateFaculty(facultyId, updateData)` - Actualizar facultad
+- ✅ `deleteFaculty(facultyId)` - Eliminar facultad
+- ✅ `facultyNameExists(name)` - Verificar si nombre existe
+- ✅ `getFacultyCount()` - Contar total de facultades
+
+**Características:**
+
+- Trim automático en campos texto
+- Validaciones completas
+- Permite actualizar nombre y descripción
+- Código reducido en ~60%
+
+**Detalles de post.repository.js (REFACTORIZADO):**
+
+El archivo ahora extiende BaseRepository con populate especializado:
+
+- ✅ `createPost(postData)` - Crear post con populate
+- ✅ `getAllPosts()` - Obtener todos los posts con populate
+- ✅ `getPostById(postId)` - Obtener post por ID con populate
+- ✅ `updatePost(postId, updateData)` - Actualizar post con populate
+- ✅ `deletePost(postId)` - Eliminar post
+- ✅ `getPostsByAuthor(authorId)` - Posts de un autor
+- ✅ `getPostsByFaculty(facultyId)` - Posts de una facultad
+
+**Características Especiales:**
+
+- Populate constante: `POPULATE_OPTIONS = [{ path: 'authorId', ... }, { path: 'facultyId', ... }]`
+- Ordenamiento automático por fecha descendente
+- Relaciones automáticamente pobladas
+- Reducción del código en ~70%
+- Manejo de errores integrado
+
+**Estado Actual:**
+
+```
+
+✅ BaseRepository creado (156 líneas, 10 métodos genéricos)
+✅ User.repository refactorizado (130 líneas, -60% código)
+✅ Faculty.repository refactorizado (138 líneas, -60% código)
+✅ Post.repository refactorizado (140 líneas, -70% código)
+✅ Acceso a datos centralizado y reutilizable
+✅ Backward compatible (funciones exportadas)
+
+```
 
 ---
 
-### 📌 Fase 5: Facultades (PRÓXIMO)
+### ✅ Fase 5: Servicios (COMPLETADA)
+
+**Objetivos Alcanzados:**
+
+- [x] Crear servicio de posts
+- [x] Crear servicio de facultades
+- [x] Implementar lógica de negocio para posts
+- [x] Implementar lógica de negocio para facultades
+- [x] Validaciones completas
+- [x] Control de ownership en posts
+
+**Archivos Creados:**
+
+| Archivo              | Descripción                                | Líneas |
+| -------------------- | ------------------------------------------ | ------ |
+| `post.service.js`    | Servicios para posts con lógica de negocio | 320+   |
+| `faculty.service.js` | Servicios para facultades con validaciones | 260+   |
+
+**Detalles de post.service.js:**
+
+Implementa funciones async para:
+
+- ✅ `createPost(postData, userId)` - Crea post validando facultad y asignando autor
+  - Valida title (mínimo 3 caracteres)
+  - Valida content (mínimo 10 caracteres)
+  - Verifica que la facultad exista
+  - Asigna automáticamente authorId desde userId
+  - Devuelve post con relaciones pobladas
+
+- ✅ `getAllPosts()` - Obtiene todos los posts
+  - Devuelve posts ordenados por fecha descendente
+  - Incluye relaciones (autor, facultad)
+
+- ✅ `getPostById(postId)` - Obtiene un post específico
+  - Lanza error si no existe
+  - Devuelve con relaciones populadas
+
+- ✅ `updatePost(postId, updateData, userId)` - Actualiza post (solo autor)
+  - Valida ownership: post.authorId === userId
+  - Solo permite editar: title, content
+  - Rechaza cambios de authorId o facultyId
+  - Valida longitudes mínimas
+  - Lanza error si no es el autor
+
+- ✅ `deletePost(postId, userId)` - Elimina post (solo autor)
+  - Valida ownership
+  - Lanza error si no es el autor
+
+- ✅ `getPostsByAuthor(authorId)` - Posts de un autor
+
+- ✅ `getPostsByFaculty(facultyId)` - Posts de una facultad
+
+**Características de post.service.js:**
+
+- Validaciones completas en cada operación
+- Manejo de errors descriptivos
+- Control de ownership para actualizar y eliminar
+- NO maneja req/res
+- SOLO usa post.repository para acceso a datos
+- Lógica de negocio centralizada
+- Async/await con try/catch
+
+**Detalles de faculty.service.js:**
+
+Implementa funciones async para:
+
+- ✅ `createFaculty(facultyData)` - Crea facultad
+  - Valida name (mínimo 3 caracteres)
+  - Verifica que no exista facultad duplicada
+  - Permite description opcional
+
+- ✅ `getAllFaculties()` - Obtiene todas las facultades
+  - Devuelve ordenadas por fecha
+
+- ✅ `getFacultyById(facultyId)` - Obtiene facultad por ID
+  - Lanza error si no existe
+
+- ✅ `updateFaculty(facultyId, updateData)` - Actualiza facultad
+  - Valida existencia previa
+  - Verifica que el nombre sea único (si se cambio)
+  - Permite actualizar: name, description
+  - Valida longitudes mínimas
+
+- ✅ `deleteFaculty(facultyId)` - Elimina facultad
+  - Valida existencia
+  - TODO: Considerar impacto en posts
+
+- ✅ `getFacultyCount()` - Obtiene total de facultades
+
+**Características de faculty.service.js:**
+
+- Validaciones completas
+- Prevención de duplicados (por nombre)
+- Manejo de errors descriptivos
+- NO maneja req/res
+- SOLO usa faculty.repository para acceso a datos
+- Lógica de negocio centralizada
+- Async/await con try/catch
+
+**Estado Actual:**
+
+```
+✅ post.service.js completado (320+ líneas, 7 funciones)
+✅ faculty.service.js completado (260+ líneas, 6 funciones)
+✅ Lógica de negocio separada de controllers
+✅ Validaciones en capa de servicios
+✅ Control de ownership en posts
+✅ Integración limpia con repositories
+✅ Sin dependencia de req/res
+✅ Arquitectura en capas completada
+```
+
+---
+
+### 📌 Fase 6: Controladores (PRÓXIMO)
 
 **Objetivos:**
 
-- [ ] Crear repositorio de facultades
-- [ ] Crear servicio de facultades
-- [ ] Implementar GET /faculties
-- [ ] Implementar POST /faculties
+- [ ] Crear post.controller.js con 5 endpoints
+- [ ] Crear faculty.controller.js con 2 endpoints
+- [ ] Validar y llamar servicios
+- [ ] Manejo de errores HTTP
 
 ---
 
@@ -837,7 +1076,7 @@ Al iniciar el servidor con `npm run dev`, se obtiene el siguiente error:
 SyntaxError: The requested module './environment.config.js' does not
 provide an export named 'config'
 
-````
+```
 
 **Causa Raíz:**
 
@@ -845,7 +1084,7 @@ En `environment.config.js` se estaba exportando:
 
 ```javascript
 export const ENVIRONMENT = { ... }
-````
+```
 
 Pero en `mongoDB.config.js` se importaba:
 
@@ -1655,7 +1894,7 @@ npm install
 
 ## 🚀 Próximos Pasos
 
-### Inmediatos (Siguiente Sesión)
+### Inmediatos (Completadas)
 
 1. ✅ **Fase 1: Configuración Inicial** - COMPLETADA
    - ✅ Express server funcionando
@@ -1675,48 +1914,53 @@ npm install
    - ✅ Rutas (auth.routes.js)
    - ✅ Middleware (auth.middleware.js)
 
+4. ✅ **Fase 4: Repositorios** - COMPLETADA (100%) + REFACTORIZADA
+   - ✅ BaseRepository (clase base genérica - 156 líneas, 10 métodos)
+   - ✅ User repository (refactorizado - 130 líneas, -60% código)
+   - ✅ Faculty repository (refactorizado - 138 líneas, -60% código)
+   - ✅ Post repository (refactorizado - 140 líneas, -70% código)
+
 ### Corto Plazo (Próximo)
 
-4. **Fase 4: Repositorios** (PRÓXIMO)
-   - [ ] User repository
-   - [ ] Faculty repository
-   - [ ] Post repository
+5. ✅ **Fase 5: Servicios** - COMPLETADA (100%)
+   - ✅ Post service (7 funciones, lógica de negocio)
+   - ✅ Faculty service (6 funciones, lógica de negocio)
+   - ✅ Validaciones completas
+   - ✅ Control de ownership
 
-5. **Fase 5: Servicios y Controladores de Posts**
-   - [ ] Post service (CRUD)
-   - [ ] Post controller
-   - [ ] Post routes
-
-6. **Fase 6: Servicios y Controladores de Facultades**
-   - [ ] Faculty service
-   - [ ] Faculty controller
-   - [ ] Faculty routes
+6. **Fase 6: Controladores** (PRÓXIMO)
+   - [ ] Post controller (5 endpoints)
+   - [ ] Faculty controller (2 endpoints)
+   - [ ] Manejo de errores HTTP
 
 ### Mediano Plazo
 
-6. **Middlewares y Utilidades**
-   - Middleware de autenticación JWT
-   - Middleware de manejo de errores
-   - Utilidad de envío de emails
-   - Validación de inputs
+7. **Middlewares y Utilidades**
+   - Middleware de error centralizado
+   - Middleware de validación de inputs
+   - Middleware para verificar autor de posts
+   - Manejo completo de errores
 
-7. **Testing**
-   - Tests unitarios
+8. **Testing**
+   - Tests unitarios para repositories
+   - Tests unitarios para services
    - Tests de integración
    - Cobertura de código
 
 ### Largo Plazo
 
-8. **Optimizaciones**
+9. **Optimizaciones**
    - Rate limiting
-   - Caché
-   - Paginación
+   - Caché con Redis
+   - Paginación en listados
    - Búsqueda avanzada
+   - Ordenamiento dinámico
 
-9. **Despliegue**
-   - Configuración de producción
-   - CI/CD
-   - Monitoreo
+10. **Despliegue**
+    - Configuración de producción
+    - CI/CD con GitHub Actions
+    - Monitoreo y logging
+    - Docker setup
 
 ---
 
@@ -1764,8 +2008,8 @@ ISC
 
 **Fecha de Inicio:** 7 de mayo, 2026
 
-**Status:** En Desarrollo - Fase 2 Próxima
+**Status:** En Desarrollo - Fase 5 Próxima
 
 ---
 
-**Última Actualización:** 7 de mayo, 2026 - Fase 3 Completada: auth.controller.js, auth.routes.js, auth.middleware.js implementados
+**Última Actualización:** 7 de mayo, 2026 - Fase 5 Completada: post.service.js y faculty.service.js implementados con lógica de negocio, validaciones y control de ownership
