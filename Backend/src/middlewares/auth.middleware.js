@@ -1,16 +1,18 @@
 import { verifyToken } from "../utils/jwt.js";
 
-/**
+/*
+
  * Middleware de Autenticación JWT
- *
+
  * Verifica que el usuario esté autenticado mediante JWT
  * Extrae el token del header Authorization (formato: "Bearer <token>")
  * Decodifica y valida el token
  * Agrega los datos del usuario a req.user
- *
+
  * Uso:
  * router.post("/posts", authMiddleware, createPost);
- */
+
+*/
 export const authMiddleware = async (req, res, next) => {
   try {
     // Obtener token del header Authorization
