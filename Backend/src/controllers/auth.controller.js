@@ -1,10 +1,12 @@
 import { registerUser, verifyUserEmail, loginUser, getUserById } from '../services/auth.service.js';
 
-/**
+/*
+
  * Controller para registrar un nuevo usuario
  * POST /auth/register
  * Body: { email, password }
- */
+
+*/
 export const register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -61,10 +63,12 @@ export const register = async (req, res, next) => {
   }
 };
 
-/**
+/*
+
  * Controller para verificar email del usuario
  * GET /auth/verify-email/:token
- */
+
+*/
 export const verifyEmail = async (req, res, next) => {
   try {
     const { token } = req.params;
@@ -101,11 +105,13 @@ export const verifyEmail = async (req, res, next) => {
   }
 };
 
-/**
+/*
+
  * Controller para login del usuario
  * POST /auth/login
  * Body: { email, password }
- */
+
+*/
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -149,12 +155,14 @@ export const login = async (req, res, next) => {
   }
 };
 
-/**
+/*
+
  * Controller para obtener perfil del usuario autenticado
  * GET /auth/profile
  * Header: Authorization: Bearer <token>
  * Requiere autenticación
- */
+
+*/
 export const getProfile = async (req, res, next) => {
   try {
     // El middleware de autenticación debe agregar req.user con el userId
