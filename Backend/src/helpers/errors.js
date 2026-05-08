@@ -60,7 +60,6 @@ export class ConflictError extends ServerError {
   }
 }
 
-
 // InternalServerError - Para errores internos (500)
 
 export class InternalServerError extends ServerError {
