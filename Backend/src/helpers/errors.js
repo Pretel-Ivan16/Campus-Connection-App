@@ -1,7 +1,7 @@
 /*
 
- * ServerError - Clase personalizada para errores del servidor
- * Extiende Error para incluir código de estado HTTP
+  ServerError - Clase personalizada para errores del servidor
+  Extiende Error para incluir código de estado HTTP
 
 */
 
