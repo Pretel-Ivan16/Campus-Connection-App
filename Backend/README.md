@@ -1039,18 +1039,78 @@ Implementa funciones async para:
 
 ---
 
-### 📌 Fase 6: Controladores (PRÓXIMO)
+### ✅ Fase 6: Controladores (COMPLETADA)
 
-**Objetivos:**
+**Objetivos Alcanzados:**
 
-- [ ] Crear post.controller.js con 5 endpoints
-- [ ] Crear faculty.controller.js con 2 endpoints
-- [ ] Validar y llamar servicios
-- [ ] Manejo de errores HTTP
+- [x] Crear post.controller.js con 7 funciones
+- [x] Crear faculty.controller.js con 6 funciones
+- [x] Conectar con servicios existentes
+- [x] Manejo de errores HTTP consistente
+- [x] Respuestas JSON estandarizadas
+- [x] Manejo de req/res sin lógica de negocio
+
+**Archivos Creados:**
+
+| Archivo                 | Descripción                       | Funciones |
+| ----------------------- | --------------------------------- | --------- |
+| `post.controller.js`    | Endpoints para CRUD de posts      | 7         |
+| `faculty.controller.js` | Endpoints para CRUD de facultades | 6         |
+
+**Detalles de post.controller.js:**
+
+Implementa endpoints para:
+
+- ✅ `createPost(req, res)` - POST /posts (201 Created)
+- ✅ `getAllPosts(req, res)` - GET /posts (200 OK)
+- ✅ `getPostById(req, res)` - GET /posts/:id (200 OK)
+- ✅ `updatePost(req, res)` - PUT /posts/:id (200 OK, solo autor)
+- ✅ `deletePost(req, res)` - DELETE /posts/:id (200 OK, solo autor)
+- ✅ `getPostsByAuthor(req, res)` - GET /posts/author/:authorId (200 OK)
+- ✅ `getPostsByFaculty(req, res)` - GET /posts/faculty/:facultyId (200 OK)
+
+**Características:**
+
+- Manejo limpio de req/res
+- Extrae userId de req.user para operaciones autenticadas
+- Respuestas JSON consistentes: `{ success, message, data }`
+- Códigos HTTP automáticos basados en errores de services
+- Try/catch en todos los endpoints
+- Sin lógica de negocio (delegada a services)
+
+**Detalles de faculty.controller.js:**
+
+Implementa endpoints para:
+
+- ✅ `createFaculty(req, res)` - POST /faculties (201 Created)
+- ✅ `getAllFaculties(req, res)` - GET /faculties (200 OK)
+- ✅ `getFacultyById(req, res)` - GET /faculties/:id (200 OK)
+- ✅ `updateFaculty(req, res)` - PUT /faculties/:id (200 OK)
+- ✅ `deleteFaculty(req, res)` - DELETE /faculties/:id (200 OK)
+- ✅ `getFacultyCount(req, res)` - GET /faculties/count/total (200 OK)
+
+**Características:**
+
+- Controllers livianos y enfocados
+- Respuestas HTTP estandarizadas
+- Manejo de errores con status automático
+- Separación clara de responsabilidades
+- Listos para conectar con rutas
+
+**Estado Actual:**
+
+```
+✅ post.controller.js completado (7 funciones)
+✅ faculty.controller.js completado (6 funciones)
+✅ Respuestas JSON consistentes en toda la capa
+✅ Manejo de req/res separado de lógica de negocio
+✅ Códigos HTTP correctos (201, 200, 400, 403, 404, 500)
+✅ Arquitectura en capas completada hasta controllers
+```
 
 ---
 
-### 📌 Fase 6: Middlewares y Utilidades (PRÓXIMO)
+### 📌 Fase 7: Rutas y Middlewares (PRÓXIMO)
 
 **Objetivos:**
 
@@ -1927,18 +1987,21 @@ npm install
    - ✅ Faculty service (6 funciones, lógica de negocio)
    - ✅ Validaciones completas
    - ✅ Control de ownership
+   - ✅ Errores personalizados (ValidationError, NotFoundError, AuthorizationError, ConflictError)
 
-6. **Fase 6: Controladores** (PRÓXIMO)
-   - [ ] Post controller (5 endpoints)
-   - [ ] Faculty controller (2 endpoints)
-   - [ ] Manejo de errores HTTP
+6. ✅ **Fase 6: Controladores** - COMPLETADA (100%)
+   - ✅ Post controller (7 funciones)
+   - ✅ Faculty controller (6 funciones)
+   - ✅ Respuestas HTTP estandarizadas
+   - ✅ Manejo de req/res sin lógica de negocio
 
 ### Mediano Plazo
 
-7. **Middlewares y Utilidades**
+7. **Fase 7: Rutas y Middlewares**
+   - Rutas de posts (post.routes.js)
+   - Rutas de facultades (faculty.routes.js)
    - Middleware de error centralizado
-   - Middleware de validación de inputs
-   - Middleware para verificar autor de posts
+   - Middleware de validación
    - Manejo completo de errores
 
 8. **Testing**
@@ -2008,8 +2071,8 @@ ISC
 
 **Fecha de Inicio:** 7 de mayo, 2026
 
-**Status:** En Desarrollo - Fase 5 Próxima
+**Status:** En Desarrollo - Fase 7 Próxima
 
 ---
 
-**Última Actualización:** 7 de mayo, 2026 - Fase 5 Completada: post.service.js y faculty.service.js implementados con lógica de negocio, validaciones y control de ownership
+**Última Actualización:** 9 de mayo, 2026 - Fase 6 Completada: post.controller.js y faculty.controller.js implementados con respuestas HTTP estandarizadas y manejo de errores profesional
