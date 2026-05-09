@@ -19,9 +19,6 @@ const facultySchema = new mongoose.Schema(
   }
 );
 
-// Índice único en name para búsquedas rápidas
-facultySchema.index({ name: 1 });
-
 const Faculty = mongoose.model('Faculty', facultySchema);
 
 export default Faculty;
