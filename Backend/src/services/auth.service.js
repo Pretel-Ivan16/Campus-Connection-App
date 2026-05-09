@@ -3,7 +3,7 @@ import { hashPassword, comparePassword } from '../utils/hash.js';
 import { generateToken, generateVerificationToken, verifyToken } from '../utils/jwt.js';
 import { sendVerificationEmail } from '../utils/email.js';
 
-export const registerUser = async (email, password, frontendUrl = 'http://localhost:3000') => {
+export const registerUser = async (email, password, frontendUrl = 'http://localhost:8080') => {
   try {
     if (!email || !password) {
       throw new Error('Email and password are required');
