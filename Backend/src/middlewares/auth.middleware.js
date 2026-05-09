@@ -2,15 +2,15 @@ import { verifyToken } from "../utils/jwt.js";
 
 /*
 
- * Middleware de Autenticación JWT
+  Middleware de Autenticación JWT
 
- * Verifica que el usuario esté autenticado mediante JWT
- * Extrae el token del header Authorization (formato: "Bearer <token>")
- * Decodifica y valida el token
- * Agrega los datos del usuario a req.user
+  Verifica que el usuario esté autenticado mediante JWT
+  Extrae el token del header Authorization (formato: "Bearer <token>")
+  Decodifica y valida el token
+  Agrega los datos del usuario a req.user
 
- * Uso:
- * router.post("/posts", authMiddleware, createPost);
+  Uso:
+  router.post("/posts", authMiddleware, createPost);
 
 */
 export const authMiddleware = async (req, res, next) => {
@@ -92,18 +92,21 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
-/**
- * Middleware Opcional de Autenticación
- *
- * Similar a authMiddleware pero no bloquea la petición si no hay token
- * Agrega req.user si el token es válido, pero permite continuar sin él
- *
- * Útil para endpoints que funcionan tanto para usuarios autenticados como anónimos
- *
- * Uso:
- * router.get("/posts", optionalAuthMiddleware, getPosts);
- * // En el controlador: if (req.user) { ... usuario autenticado ... }
- */
+/*
+
+  Middleware Opcional de Autenticación
+
+  Similar a authMiddleware pero no bloquea la petición si no hay token
+  Agrega req.user si el token es válido, pero permite continuar sin él
+
+  Útil para endpoints que funcionan tanto para usuarios autenticados como anónimos
+
+  Uso:
+  router.get("/posts", optionalAuthMiddleware, getPosts);
+  En el controlador: if (req.user) { ... usuario autenticado ... }
+
+*/
+
 export const optionalAuthMiddleware = async (req, res, next) => {
   try {
     // Obtener token del header Authorization
@@ -149,16 +152,19 @@ export const optionalAuthMiddleware = async (req, res, next) => {
   }
 };
 
-/**
- * Middleware de Validación de Rol (Ejemplo para futuro)
- *
- * Verifica que el usuario autenticado tenga un rol específico
- * NOTA: Actualmente no está implementado en los modelos,
- * pero está aquí como referencia para futuras expansiones
- *
- * Uso:
- * router.delete("/posts/:id", authMiddleware, requireRole("admin"), deletePost);
- */
+/*
+
+  Middleware de Validación de Rol (Ejemplo para futuro)
+
+  Verifica que el usuario autenticado tenga un rol específico
+  NOTA: Actualmente no está implementado en los modelos,
+  pero está aquí como referencia para futuras expansiones
+
+  Uso:
+  router.delete("/posts/:id", authMiddleware, requireRole("admin"), deletePost);
+
+*/
+
 export const requireRole = (roleRequired) => {
   return (req, res, next) => {
     if (!req.user) {
@@ -168,13 +174,17 @@ export const requireRole = (roleRequired) => {
       });
     }
 
-    // TODO: Implementar lógica de roles cuando se agregue al modelo User
-    // if (req.user.role !== roleRequired) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "Insufficient permissions",
-    //   });
-    // }
+    /* 
+
+    TODO: Implementar lógica de roles cuando se agregue al modelo User
+    if (req.user.role !== roleRequired) {
+      return res.status(403).json({
+        success: false,
+        message: "Insufficient permissions",
+      });
+    } 
+      
+    */
 
     next();
   };
