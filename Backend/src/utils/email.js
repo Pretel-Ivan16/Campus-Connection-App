@@ -1,6 +1,14 @@
 import nodemailer from 'nodemailer';
 import { ENVIRONMENT } from '../config/environment.config.js';
 
+// Validar que existan credenciales
+if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
+  console.error('❌ ERROR: Faltan credenciales de email en .env');
+  console.error('   EMAIL_USER:', ENVIRONMENT.emailUser ? '✅ Configurado' : '❌ No configurado');
+  console.error('   EMAIL_PASS:', ENVIRONMENT.emailPass ? '✅ Configurado' : '❌ No configurado');
+  console.error('   Verifica que tu archivo .env esté en: Backend/.env');
+}
+
 // Crear transporte de email
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -13,17 +21,17 @@ const transporter = nodemailer.createTransport({
 export const sendVerificationEmail = async (
   email,
   verificationToken,
-  frontendUrl = 'http://localhost:3000'
+  frontendUrl = 'http://localhost:8080'
 ) => {
   try {
     if (!email || !verificationToken) {
       throw new Error('Email and verificationToken are required');
     }
 
-    const verificationLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
+    const verificationLink = `${frontendUrl}/api/auth/verify-email/${verificationToken}`;
 
     const mailOptions = {
-      from: config.emailUser,
+      from: ENVIRONMENT.emailUser,
       to: email,
       subject: 'Verifica tu correo electrónico - CampusConnect',
       html: `
@@ -57,8 +65,20 @@ export const sendVerificationEmail = async (
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    console.log('\n📧 Intentando enviar email...');
+    console.log('   De:', ENVIRONMENT.emailUser);
+    console.log('   Para:', email);
+    console.log('   Asunto:', mailOptions.subject);
+    
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log('✅ Email enviado exitosamente!');
+    console.log('   ID:', info.messageId);
+    console.log('   Response:', info.response);
   } catch (error) {
+    console.error('❌ Error enviando email:');
+    console.error('   Mensaje:', error.message);
+    console.error('   Code:', error.code);
     throw new Error(`Error sending verification email: ${error.message}`);
   }
 };
@@ -70,7 +90,7 @@ export const sendEmail = async (email, subject, htmlContent) => {
     }
 
     const mailOptions = {
-      from: config.emailUser,
+      from: ENVIRONMENT.emailUser,
       to: email,
       subject,
       html: htmlContent,
@@ -84,7 +104,7 @@ export const sendEmail = async (email, subject, htmlContent) => {
 
 export const verifyEmailConnection = async () => {
   try {
-    if (!config.emailUser || !config.emailPass) {
+    if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
       throw new Error('Email credentials are not configured');
     }
 
