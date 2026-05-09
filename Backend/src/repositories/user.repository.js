@@ -3,10 +3,11 @@ import { BaseRepository } from './base.repository.js';
 
 /*
 
- * UserRepository - Repository para operaciones con usuarios
- * Extiende BaseRepository para reutilizar lógica CRUD genérica
+  UserRepository - Repository para operaciones con usuarios
+  Extiende BaseRepository para reutilizar lógica CRUD genérica
 
 */
+
 export class UserRepository extends BaseRepository {
   constructor() {
     super(User);

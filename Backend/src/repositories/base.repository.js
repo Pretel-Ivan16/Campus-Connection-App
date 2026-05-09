@@ -113,7 +113,7 @@ export class BaseRepository {
       } = options;
 
       let query = this.Model.findByIdAndUpdate(id, data, {
-        new: returnNew,
+        returnDocument: returnNew ? 'after' : 'before',
         runValidators,
       });
 
