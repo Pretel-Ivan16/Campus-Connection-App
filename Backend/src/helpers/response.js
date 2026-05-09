@@ -1,9 +1,10 @@
 /*
 
- * ApiResponse - Clase para respuestas consistentes de API
- * Estandariza el formato de respuestas de éxito y error
+  ApiResponse - Clase para respuestas consistentes de API
+  Estandariza el formato de respuestas de éxito y error
 
 */
+
 export class ApiResponse {
   constructor(success, message, data = null, status = 200) {
     this.success = success;
@@ -37,11 +38,9 @@ export class ApiResponse {
       message: this.message,
       status: this.status,
     };
-
     if (this.data !== null && this.data !== undefined) {
       response.data = this.data;
     }
-
     return response;
   }
 }
