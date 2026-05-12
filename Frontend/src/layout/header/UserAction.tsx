@@ -5,16 +5,16 @@ function UserAction() {
   return (
     <>
       {/* Icono en pantallas pequeñas */}
-      <Link to="/login" className="md:hidden flex items-center justify-center p-2">
+      <Link to="/login" className="lg:hidden flex items-center justify-center p-2">
         <User size={24} className="text-[#eee]" />
       </Link>
 
       {/* Botones en pantallas grandes */}
-      <div className="hidden md:flex gap-2 md:gap-4 items-center justify-center md:m-9 h-8 md:h-10 px-3 md:w-64 md:p-8 bg-[#6483ff] rounded-lg">
-        <Link to="/login" className="text-primary-foreground h-max hover:text-[#06070b] transition-colors text-sm lg:text-base"> 
+      <div className="hidden lg:flex gap-2 lg:gap-4 items-center justify-center lg:m-9 h-8 lg:h-10 px-3 lg:w-64 lg:p-8  rounded-lg">
+        <Link to="/login" className="text-primary-foreground h-max whitespace-nowrap transition-colors text-sm lg:text-base"> 
           Iniciar Sesión
         </Link>
-        <Link to="/register" className="ml-4 text-primary-foreground hover:text-[#06070b] transition-colors text-sm lg:text-base">
+        <Link to="/register" className="p-2 ml-4 text-primary-foreground hover:text-[#06070b] transition-colors text-sm lg:text-base bg-[#6483ff] rounded-lg">
           Registrarse
         </Link>
       </div>

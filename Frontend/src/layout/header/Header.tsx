@@ -5,10 +5,10 @@ import UserAction from "./UserAction"
 
 function Header() {
   return (
-    <header className="w-full min-h-28 bg-background flex items-center justify-center">
-      <div className="flex items-center justify-between w-full md:min-w-200 min-h-32 px-3 sm:px-4 md:px-0">
+    <header className="w-full bg-background flex">
+      <div className="flex items-center justify-between min-h-32 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 w-full">
         <BrandLogo />
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <NavLinks />
         </div>
         <div className="flex items-center gap-4">
