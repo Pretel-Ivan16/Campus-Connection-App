@@ -1,0 +1,19 @@
+function HeroSection() {
+  return (
+    <section className="container mx-auto px-4 py-20 text-center rounded-xl">
+      <h1 className="text-5xl font-bold text-[#eee] mb-6">
+        Bienvenido a Campus Connection
+      </h1>
+      <p className="text-xl text-[#b0b0b0] mb-10 max-w-2xl mx-auto">
+        Conecta con otros estudiantes, comparte experiencias y crece académicamente en nuestra comunidad
+      </p>
+      <div>
+        <a href="/login" className="text-white text-2xl bg-[#6483ff] hover:bg-[#5a76e8] font-semibold py-3 px-8 rounded-lg transition">
+          VER MÁS
+        </a>
+      </div>
+    </section>
+  )
+}
+
+export default HeroSection
