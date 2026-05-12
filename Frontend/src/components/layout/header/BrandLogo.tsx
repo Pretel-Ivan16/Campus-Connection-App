@@ -1,5 +1,5 @@
-import { Logo } from "../../components/Logo"
-import TittleLogo from "../../components/TittleLogo"
+import { Logo } from "../../Logo"
+import TittleLogo from "../../TittleLogo"
 
 function BrandLogo() {
   return (
