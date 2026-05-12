@@ -1,13 +1,12 @@
 import { GraduationCap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import SocialLink from './SocialLink'
-import { Share2, Code, Mail, Camera } from 'lucide-react'
 
 const socialLinks = [
-  { icon: Share2, href: '#', label: 'Twitter' },
-  { icon: Code, href: '#', label: 'GitHub' },
-  { icon: Mail, href: '#', label: 'LinkedIn' },
-  { icon: Camera, href: '#', label: 'Instagram' },
+  { iconClass: 'bi-twitter-x', href: '#', label: 'Twitter' },
+  { iconClass: 'bi-github', href: '#', label: 'GitHub' },
+  { iconClass: 'bi-linkedin', href: '#', label: 'LinkedIn' },
+  { iconClass: 'bi-instagram', href: '#', label: 'Instagram' },
 ]
 
 function FooterBrand() {
@@ -26,7 +25,7 @@ function FooterBrand() {
         {socialLinks.map((social) => (
           <SocialLink
             key={social.label}
-            icon={social.icon}
+            iconClass={social.iconClass}
             href={social.href}
             label={social.label}
           />
