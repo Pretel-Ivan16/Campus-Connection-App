@@ -4,7 +4,7 @@ import CTASection from '../components/ui/CTASection'
 
 function Home() {
   return (
-    <main className="min-h-screen bg-[#0d0f16]">
+    <main className="min-h-screen bg-background">
       <HeroSection />
       <FeaturesSection />
       <CTASection />
