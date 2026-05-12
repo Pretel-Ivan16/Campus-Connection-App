@@ -26,16 +26,16 @@ export const HamburgerMenu = () => {
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-300" onClick={closeMenu} />
+          <div className="fixed top-28 left-0 right-0 min-h-[calc(100vh-7rem)] bg-black/20 backdrop-blur-md z-40 animate-in fade-in duration-300" onClick={closeMenu} />
           <nav className="fixed top-28 left-0 right-0 bg-background border-b border-[#2a2a2a] z-50 w-full animate-in slide-in-from-top duration-300">
             <div className="flex flex-col gap-6 p-8 items-center justify-center">
-              <Link to="/publicaciones" onClick={closeMenu} className="text-[#8f8f8f] hover:text-[#eee] transition-colors mb-2">
+              <Link to="/publicaciones" onClick={closeMenu} className="text-[#b0b0b0] hover:text-[#6483ff] font-semibold transition-colors mb-2">
                 Publicaciones
               </Link>
-              <Link to="/facultades" onClick={closeMenu} className="text-[#8f8f8f] hover:text-[#eee] transition-colors mb-2">
+              <Link to="/facultades" onClick={closeMenu} className="text-[#b0b0b0] hover:text-[#6483ff] font-semibold transition-colors mb-2">
                 Facultades
               </Link>
-              <Link to="/foros" onClick={closeMenu} className="text-[#8f8f8f] hover:text-[#eee] transition-colors mb-2">
+              <Link to="/foros" onClick={closeMenu} className="text-[#b0b0b0] hover:text-[#6483ff] font-semibold transition-colors mb-2">
                 Foros
               </Link>
             </div>

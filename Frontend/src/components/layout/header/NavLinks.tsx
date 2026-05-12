@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export const NavLinks = () => {
   return (
-    <nav className="flex gap-4 md:gap-8">
+    <nav className="hidden lg:flex gap-4 md:gap-8 items-center justify-center">
       <Link to="/publicaciones" className="text-[#8f8f8f] hover:text-[#eee] transition-colors text-xs sm:text-sm md:text-base">
         Publicaciones
       </Link>
