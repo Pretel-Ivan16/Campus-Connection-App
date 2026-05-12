@@ -1,6 +1,6 @@
 function HeroSection() {
   return (
-    <section className="container mx-auto px-4 py-20 text-center rounded-xl">
+    <section className="container mx-auto  px-20 py-20 text-center rounded-xl bg-[#0a0c12]">
       <h1 className="text-5xl font-bold text-[#eee] mb-6">
         Bienvenido a Campus Connection
       </h1>
