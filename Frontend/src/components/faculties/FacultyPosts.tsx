@@ -13,7 +13,8 @@ export const FacultyPosts = ({ facultyId }: FacultyPostsProps) => {
   const { posts, isLoading, error, refetchPosts } = usePostsByFaculty(facultyId);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  // Verificar si el usuario es admin
+  // Verificar si el usuario está autenticado
+  const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
 
   // Manejar error en la carga
@@ -34,6 +35,7 @@ export const FacultyPosts = ({ facultyId }: FacultyPostsProps) => {
         <PostsList
           posts={posts}
           isAdmin={isAdmin}
+          isAuthenticated={isAuthenticated}
           isLoading={isLoading}
           facultyId={facultyId}
           onPostCreated={refetchPosts}
@@ -42,7 +44,7 @@ export const FacultyPosts = ({ facultyId }: FacultyPostsProps) => {
       </div>
 
       {/* Modal para crear publicación */}
-      {isAdmin && (
+      {isAuthenticated && (
         <CreatePostModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
