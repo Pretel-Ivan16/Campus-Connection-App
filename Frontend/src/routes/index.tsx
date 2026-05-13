@@ -9,6 +9,7 @@ import VerifyEmailPending from '../pages/VerifyEmailPending';
 import RecoverPassword from '../pages/RecoverPassword/RecoverPassword';
 import ResetPassword from '../pages/ResetPassword/ResetPassword';
 import Foros from '../pages/Foros';
+import Publicaciones from '../pages/Publicaciones/Publicaciones';
 import Faculties from '../pages/Faculties/Faculties';
 import FacultyDetail from '../pages/Faculties/FacultyDetail';
 import Layout from '../components/layout/Layout';
@@ -36,6 +37,7 @@ export default function AppRoutes() {
           >
             <Route path="/home" element={<Home />} />
             <Route path="/foros" element={<Foros />} />
+            <Route path="/publicaciones" element={<Publicaciones />} />
             <Route path="/" element={<Navigate to="/home" replace />} />
             {/* Aquí irán más rutas protegidas */}
           </Route>
