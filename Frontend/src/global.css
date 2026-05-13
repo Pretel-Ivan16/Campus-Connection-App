@@ -72,3 +72,80 @@ body {
     background-color: var(--primary);
   }
 }
+
+/* Custom Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+/* Utility Classes */
+.animate-slideInUp {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-out;
+}
+
+/* Select Styles */
+select {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+select option {
+  background-color: #1f2937 !important;
+  color: white !important;
+  padding: 8px 10px;
+}
+
+select option:checked {
+  background: linear-gradient(#3b82f6, #3b82f6) !important;
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
