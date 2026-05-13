@@ -1,8 +1,55 @@
-export const FacultyPosts = () => {
+import { useState } from 'react';
+import { usePostsByFaculty } from '../../hooks/usePostsByFaculty';
+import { useAuth } from '../../hooks/useAuth';
+import { PostsList } from '../posts/PostsList';
+import { CreatePostModal } from '../posts/CreatePostModal';
+
+interface FacultyPostsProps {
+  facultyId: string;
+}
+
+export const FacultyPosts = ({ facultyId }: FacultyPostsProps) => {
+  const { user } = useAuth();
+  const { posts, isLoading, error, refetchPosts } = usePostsByFaculty(facultyId);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Verificar si el usuario es admin
+  const isAdmin = user?.role === 'admin';
+
+  // Manejar error en la carga
+  if (error) {
+    return (
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-4">Publicaciones</h2>
+        <p className="text-red-500">Error al cargar las publicaciones: {error}</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-white mb-4">Publicaciones</h2>
-      <p className="text-[#8f8f8f]">Las publicaciones de esta facultad aparecerán aquí.</p>
-    </div>
+    <>
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-4">Publicaciones</h2>
+
+        <PostsList
+          posts={posts}
+          isAdmin={isAdmin}
+          isLoading={isLoading}
+          facultyId={facultyId}
+          onPostCreated={refetchPosts}
+          onCreatePostClick={() => setIsCreateModalOpen(true)}
+        />
+      </div>
+
+      {/* Modal para crear publicación */}
+      {isAdmin && (
+        <CreatePostModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          facultyId={facultyId}
+          onPostCreated={refetchPosts}
+        />
+      )}
+    </>
   );
 };

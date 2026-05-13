@@ -25,7 +25,7 @@ export const FacultyInfo = ({ faculty }: FacultyInfoProps) => {
 
       {/* Posts */}
       <div className="border-t border-[#2a2a2a] pt-6 mt-6">
-        <FacultyPosts />
+        <FacultyPosts facultyId={faculty._id} />
       </div>
     </div>
   );
