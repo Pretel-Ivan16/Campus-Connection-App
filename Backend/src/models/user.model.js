@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false, // No incluir token por defecto en queries
     },
+    passwordResetToken: {
+      type: String,
+      select: false, // No incluir token por defecto en queries
+    },
+    passwordResetTokenExpiry: {
+      type: Date,
+      select: false, // No incluir expiry por defecto en queries
+    },
   },
   {
     timestamps: true, // Agrega createdAt y updatedAt automáticamente
