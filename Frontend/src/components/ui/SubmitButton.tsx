@@ -2,13 +2,14 @@ interface SubmitButtonProps {
   isLoading: boolean;
   label: string;
   loadingLabel?: string;
+  disabled?: boolean;
 }
 
-export default function SubmitButton({ isLoading, label, loadingLabel = `${label}...` }: SubmitButtonProps) {
+export default function SubmitButton({ isLoading, label, loadingLabel = `${label}...`, disabled = false }: SubmitButtonProps) {
   return (
     <button
       type="submit"
-      disabled={isLoading}
+      disabled={isLoading || disabled}
       className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2"
     >
       {isLoading ? (

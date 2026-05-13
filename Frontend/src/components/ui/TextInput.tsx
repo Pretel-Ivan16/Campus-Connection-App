@@ -7,6 +7,7 @@ interface TextInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   icon?: 'mail' | 'lock' | 'user';
   required?: boolean;
+  disabled?: boolean;
 }
 
 // SVG Icons
@@ -37,6 +38,7 @@ export default function TextInput({
   onChange,
   icon,
   required = true,
+  disabled = false,
 }: TextInputProps) {
   return (
     <div>
@@ -52,7 +54,10 @@ export default function TextInput({
           value={value}
           onChange={onChange}
           required={required}
-          className={`w-full ${icon ? 'pl-10' : 'pl-4'} pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 transition`}
+          disabled={disabled}
+          className={`w-full ${icon ? 'pl-10' : 'pl-4'} pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 transition ${
+            disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+          }`}
         />
       </div>
     </div>
