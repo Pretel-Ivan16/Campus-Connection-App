@@ -15,8 +15,8 @@ export const FacultyCard = ({ faculty, onDelete, onEdit, isDeleting }: FacultyCa
     <Link to={`/facultades/${faculty._id}`} className="group">
       <div className="bg-linear-to-br from-[#1a1d2e] to-[#0d0f16] border border-[#2a2a2a] rounded-lg p-6 hover:border-[#6483ff] hover:shadow-lg hover:shadow-[#6483ff]/20 transition-all duration-300 h-full flex flex-col">
         {/* Header con acciones */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex-1 min-w-0">
             <h3 className="text-lg font-bold text-white group-hover:text-[#6483ff] transition-colors truncate">
               {faculty.name}
             </h3>
@@ -24,7 +24,7 @@ export const FacultyCard = ({ faculty, onDelete, onEdit, isDeleting }: FacultyCa
 
           {/* Botones de admin (no clickean el link) */}
           <RoleGuard allowedRoles={['admin']}>
-            <div className="flex gap-2 ml-2" onClick={(e) => e.preventDefault()}>
+            <div className="flex gap-2 shrink-0" onClick={(e) => e.preventDefault()}>
               <button
                 onClick={() => onEdit?.(faculty)}
                 className="p-2 rounded-lg bg-[#2a2a2a] hover:bg-blue-600 text-[#b0b0b0] hover:text-white transition-colors"
