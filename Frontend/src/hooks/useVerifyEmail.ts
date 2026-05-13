@@ -27,13 +27,6 @@ export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn 
         await verifyEmailToken(token);
         setStatus('success');
         setMessage('¡Tu email ha sido verificado exitosamente!');
-
-        // Redirigir al login después de 3 segundos
-        // Primero hacer logout para limpiar cualquier token previo
-        setTimeout(() => {
-          logout();
-          navigate('/login');
-        }, 3000);
       } catch (error: any) {
         setStatus('error');
         const errorMessage = error?.response?.data?.message || 'Error al verificar el email';
@@ -42,7 +35,19 @@ export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn 
     };
 
     verifyEmail();
-  }, [token, navigate, verifyEmailToken, logout]);
+  }, [token, verifyEmailToken]);
+
+  // Efecto separado para manejar la redirección después de verificación exitosa
+  useEffect(() => {
+    if (status === 'success') {
+      const timer = setTimeout(() => {
+        logout();
+        navigate('/login');
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [status, logout, navigate]);
 
   return {
     status,
