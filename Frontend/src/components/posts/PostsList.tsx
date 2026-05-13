@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 interface PostsListProps {
   posts: Post[];
   isAdmin?: boolean;
+  isAuthenticated?: boolean;
   isLoading?: boolean;
   onPostCreated?: () => void;
   onCreatePostClick?: () => void;
@@ -17,6 +18,7 @@ interface PostsListProps {
 export const PostsList = ({
   posts,
   isAdmin = false,
+  isAuthenticated = false,
   isLoading = false,
   onPostCreated,
   onCreatePostClick,
@@ -69,7 +71,7 @@ export const PostsList = ({
     return (
       <div className="text-center py-8">
         <p className="text-[#8f8f8f] mb-4">No hay publicaciones aún</p>
-        {isAdmin && (
+        {isAuthenticated && (
           <button
             onClick={onCreatePostClick}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
@@ -83,7 +85,7 @@ export const PostsList = ({
 
   return (
     <div className="space-y-4">
-      {isAdmin && (
+      {isAuthenticated && (
         <button
           onClick={onCreatePostClick}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
@@ -98,16 +100,15 @@ export const PostsList = ({
             key={post._id}
             post={post}
             isAdmin={isAdmin}
+            isAuthenticated={isAuthenticated}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
         ))}
       </div>
-    </div>
-  );
 
       {/* Modal para editar publicación */}
-      {isAdmin && (
+      {isAuthenticated && (
         <EditPostModal
           isOpen={!!editingPost}
           onClose={() => setEditingPost(null)}
@@ -115,4 +116,6 @@ export const PostsList = ({
           onPostUpdated={onPostCreated ?? (() => {})}
         />
       )}
+    </div>
+  );
 };
