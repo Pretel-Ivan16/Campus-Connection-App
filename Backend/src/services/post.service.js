@@ -115,7 +115,7 @@ export const getPostById = async (postId) => {
  * Solo el autor puede actualizar su post
 
 */
-export const updatePost = async (postId, updateData, userId) => {
+export const updatePost = async (postId, updateData, userId, userRole = 'user') => {
   try {
     if (!postId) {
       throw new Error('Post ID is required');
@@ -136,12 +136,14 @@ export const updatePost = async (postId, updateData, userId) => {
       throw new Error('Post not found');
     }
 
-    // Validar ownership - el authorId debe ser igual al userId autenticado
+    // Validar ownership o rol de admin
     const postAuthorId = currentPost.authorId?._id?.toString() || currentPost.authorId?.toString();
     const authenticatedUserId = userId.toString();
+    const isAuthor = postAuthorId === authenticatedUserId;
+    const isAdmin = userRole === 'admin';
 
-    if (postAuthorId !== authenticatedUserId) {
-      throw new Error('Only the post author can update this post');
+    if (!isAuthor && !isAdmin) {
+      throw new Error('Only the post author or an admin can update this post');
     }
 
     // Validar que solo se actualicen campos permitidos
@@ -199,7 +201,7 @@ export const updatePost = async (postId, updateData, userId) => {
  * Solo el autor puede eliminar su post
 
 */
-export const deletePost = async (postId, userId) => {
+export const deletePost = async (postId, userId, userRole = 'user') => {
   try {
     if (!postId) {
       throw new Error('Post ID is required');
@@ -216,12 +218,14 @@ export const deletePost = async (postId, userId) => {
       throw new Error('Post not found');
     }
 
-    // Validar ownership
+    // Validar ownership o rol de admin
     const postAuthorId = currentPost.authorId?._id?.toString() || currentPost.authorId?.toString();
     const authenticatedUserId = userId.toString();
+    const isAuthor = postAuthorId === authenticatedUserId;
+    const isAdmin = userRole === 'admin';
 
-    if (postAuthorId !== authenticatedUserId) {
-      throw new Error('Only the post author can delete this post');
+    if (!isAuthor && !isAdmin) {
+      throw new Error('Only the post author or an admin can delete this post');
     }
 
     // Eliminar post mediante repository
