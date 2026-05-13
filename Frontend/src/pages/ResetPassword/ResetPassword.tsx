@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Lock, ArrowLeft } from 'lucide-react';
 import { useResetPassword } from '../../hooks/useResetPassword';
 import FormHeader from '../../components/ui/FormHeader';
 import ErrorAlert from '../../components/ui/ErrorAlert';
@@ -45,7 +44,9 @@ export default function ResetPassword() {
           onClick={() => navigate('/login')}
           className="flex items-center gap-2 text-[#6483ff] hover:opacity-80 transition-opacity mb-6"
         >
-          <ArrowLeft size={18} />
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
           <span className="text-sm">Volver al login</span>
         </button>
 
@@ -64,7 +65,7 @@ export default function ResetPassword() {
             placeholder="••••••••"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            icon={Lock}
+            icon="lock"
           />
 
           <TextInput
@@ -74,7 +75,7 @@ export default function ResetPassword() {
             placeholder="••••••••"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            icon={Lock}
+            icon="lock"
           />
 
           <SubmitButton 
