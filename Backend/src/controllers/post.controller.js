@@ -118,10 +118,11 @@ export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
+    const userRole = req.user?.role;
     const updateData = req.body;
 
     // Llamar servicio
-    const updatedPost = await postService.updatePost(id, updateData, userId);
+    const updatedPost = await postService.updatePost(id, updateData, userId, userRole);
 
     // Respuesta exitosa
     res.status(200).json({
@@ -152,9 +153,10 @@ export const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
+    const userRole = req.user?.role;
 
     // Llamar servicio
-    const deletedPost = await postService.deletePost(id, userId);
+    const deletedPost = await postService.deletePost(id, userId, userRole);
 
     // Respuesta exitosa
     res.status(200).json({

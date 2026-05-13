@@ -9,6 +9,8 @@ import VerifyEmail from '../pages/VerifyEmail/VerifyEmail';
 import RecoverPassword from '../pages/RecoverPassword/RecoverPassword';
 import ResetPassword from '../pages/ResetPassword/ResetPassword';
 import Foros from '../pages/Foros';
+import Faculties from '../pages/Faculties/Faculties';
+import FacultyDetail from '../pages/Faculties/FacultyDetail';
 import Layout from '../components/layout/Layout';
 
 export default function AppRoutes() {
@@ -36,6 +38,12 @@ export default function AppRoutes() {
               <Route path="/foros" element={<Foros />} />
               <Route path="/" element={<Navigate to="/home" replace />} />
               {/* Aquí irán más rutas protegidas */}
+            </Route>
+
+            {/* Rutas públicas con layout (sin autenticación requerida) */}
+            <Route element={<Layout />}>
+              <Route path="/facultades" element={<Faculties />} />
+              <Route path="/facultades/:id" element={<FacultyDetail />} />
             </Route>
 
             {/* 404 */}

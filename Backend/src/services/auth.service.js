@@ -21,6 +21,10 @@ export const registerUser = async (email, password, name, frontendUrl = 'http://
     // Generar token de verificación
     const verificationToken = generateVerificationToken(email);
 
+    // Verificar si existe algún admin en la base de datos
+    const adminExists = await User.findOne({ role: 'admin' });
+    const userRole = adminExists ? 'user' : 'admin'; // Si no hay admin, el primero es admin
+
     // Crear usuario
     const newUser = new User({
       name,
@@ -28,6 +32,7 @@ export const registerUser = async (email, password, name, frontendUrl = 'http://
       password: hashedPassword,
       verificationToken,
       isVerified: false,
+      role: userRole,
     });
 
     await newUser.save();
@@ -41,6 +46,7 @@ export const registerUser = async (email, password, name, frontendUrl = 'http://
       name: newUser.name,
       email: newUser.email,
       isVerified: newUser.isVerified,
+      role: newUser.role,
       message: 'User registered successfully. Check your email to verify your account.',
     };
   } catch (error) {
@@ -108,7 +114,7 @@ export const loginUser = async (email, password) => {
     }
 
     // Generar JWT
-    const token = generateToken({ userId: user._id, email: user.email }, '24h');
+    const token = generateToken({ userId: user._id, email: user.email, role: user.role }, '24h');
 
     return {
       token,
@@ -116,6 +122,7 @@ export const loginUser = async (email, password) => {
       name: user.name,
       email: user.email,
       isVerified: user.isVerified,
+      role: user.role,
       message: 'Login successful',
     };
   } catch (error) {
@@ -139,6 +146,7 @@ export const getUserById = async (userId) => {
       userId: user._id,
       email: user.email,
       isVerified: user.isVerified,
+      role: user.role,
       createdAt: user.createdAt,
     };
   } catch (error) {

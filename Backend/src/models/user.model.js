@@ -39,6 +39,11 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false, // No incluir expiry por defecto en queries
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
   },
   {
     timestamps: true, // Agrega createdAt y updatedAt automáticamente

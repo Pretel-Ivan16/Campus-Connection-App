@@ -1,6 +1,7 @@
 import express from 'express';
 import * as facultyController from '../controllers/faculty.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { authorize } from '../middlewares/authorize.middleware.js';
 
 const router = express.Router();
 
@@ -13,9 +14,9 @@ const router = express.Router();
 
 /*
   POST /api/faculties
-  Crea una nueva facultad (requiere autenticación)
+  Crea una nueva facultad (requiere autenticación y rol admin)
 */
-router.post('/', authMiddleware, facultyController.createFaculty);
+router.post('/', authMiddleware, authorize('admin'), facultyController.createFaculty);
 
 /*
   GET /api/faculties
@@ -31,15 +32,15 @@ router.get('/:id', facultyController.getFacultyById);
 
 /*
   PUT /api/faculties/:id
-  Actualiza una facultad (requiere autenticación)
+  Actualiza una facultad (requiere autenticación y rol admin)
 */
-router.put('/:id', authMiddleware, facultyController.updateFaculty);
+router.put('/:id', authMiddleware, authorize('admin'), facultyController.updateFaculty);
 
 /*
   DELETE /api/faculties/:id
-  Elimina una facultad (requiere autenticación)
+  Elimina una facultad (requiere autenticación y rol admin)
 */
-router.delete('/:id', authMiddleware, facultyController.deleteFaculty);
+router.delete('/:id', authMiddleware, authorize('admin'), facultyController.deleteFaculty);
 
 /*
   GET /api/faculties/count/total
