@@ -4,18 +4,18 @@ import { registerUser, verifyUserEmail, loginUser, getUserById, recoverPassword,
 
  * Controller para registrar un nuevo usuario
  * POST /auth/register
- * Body: { email, password }
+ * Body: { email, password, name }
 
 */
 export const register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
 
     // Validar inputs
-    if (!email || !password) {
+    if (!email || !password || !name) {
       return res.status(400).json({
         success: false,
-        message: 'Email and password are required',
+        message: 'Email, password, and name are required',
       });
     }
 
@@ -40,7 +40,7 @@ export const register = async (req, res, next) => {
     const frontendUrl = req.body.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:8080';
 
     // Registrar usuario
-    const result = await registerUser(email, password, frontendUrl);
+    const result = await registerUser(email, password, name, frontendUrl);
 
     res.status(201).json({
       success: true,

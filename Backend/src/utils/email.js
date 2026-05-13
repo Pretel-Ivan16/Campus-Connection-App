@@ -28,7 +28,7 @@ export const sendVerificationEmail = async (
       throw new Error('Email and verificationToken are required');
     }
 
-    const verificationLink = `${frontendUrl}/api/auth/verify-email/${verificationToken}`;
+    const verificationLink = `${frontendUrl}/verify-email/${verificationToken}`;
 
     const mailOptions = {
       from: ENVIRONMENT.emailUser,

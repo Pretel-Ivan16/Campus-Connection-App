@@ -3,10 +3,10 @@ import { hashPassword, comparePassword } from '../utils/hash.js';
 import { generateToken, generateVerificationToken, verifyToken } from '../utils/jwt.js';
 import { sendVerificationEmail, sendPasswordRecoveryEmail } from '../utils/email.js';
 
-export const registerUser = async (email, password, frontendUrl = 'http://localhost:8080') => {
+export const registerUser = async (email, password, name, frontendUrl = 'http://localhost:8080') => {
   try {
-    if (!email || !password) {
-      throw new Error('Email and password are required');
+    if (!email || !password || !name) {
+      throw new Error('Email, password, and name are required');
     }
 
     // Validar que email no exista
@@ -23,6 +23,7 @@ export const registerUser = async (email, password, frontendUrl = 'http://localh
 
     // Crear usuario
     const newUser = new User({
+      name,
       email,
       password: hashedPassword,
       verificationToken,
@@ -37,6 +38,7 @@ export const registerUser = async (email, password, frontendUrl = 'http://localh
     // Devolver usuario sin password
     return {
       userId: newUser._id,
+      name: newUser.name,
       email: newUser.email,
       isVerified: newUser.isVerified,
       message: 'User registered successfully. Check your email to verify your account.',
@@ -111,6 +113,7 @@ export const loginUser = async (email, password) => {
     return {
       token,
       userId: user._id,
+      name: user.name,
       email: user.email,
       isVerified: user.isVerified,
       message: 'Login successful',

@@ -48,13 +48,13 @@ function UserAction() {
       {/* Menú de usuario en pantallas grandes */}
       <div className="hidden lg:flex items-center gap-2 relative">
         <UserButton 
-          email={user?.email || ''} 
+          name={user?.name || ''} 
           onClick={() => setShowMenu(!showMenu)}
           isActive={showMenu}
         />
 
         <DropdownMenu isOpen={showMenu} align="right" position="bottom">
-          <UserInfo email={user?.email || ''} />
+          <UserInfo name={user?.name || ''} email={user?.email || ''} />
           <DropdownItem onClick={handleLogout}>
             <LogOut size={18} />
             Cerrar Sesión
@@ -65,7 +65,7 @@ function UserAction() {
       {/* Menú móvil */}
       <DropdownMenu isOpen={showMenu} align="right" position="bottom">
         <div className="lg:hidden">
-          <UserInfo email={user?.email || ''} />
+          <UserInfo name={user?.name || ''} email={user?.email || ''} />
           <DropdownItem onClick={handleLogout}>
             <LogOut size={18} />
             Cerrar Sesión
