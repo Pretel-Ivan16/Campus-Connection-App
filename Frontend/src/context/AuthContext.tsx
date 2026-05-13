@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       storage.saveToken(response.token);
       const userData: User = {
         userId: response.userId,
+        name: response.name,
         email: response.email,
         isVerified: response.isVerified,
       };
