@@ -32,14 +32,15 @@ export const useResetPassword = () => {
     setIsLoading(true);
     try {
       await authService.resetPassword(token, newPassword);
-      // Redirect a login after 2 seconds
+      // Success - show message and redirect to login after 2 seconds
+      setError(null);
       setTimeout(() => {
         navigate('/login');
       }, 2000);
     } catch (err: any) {
-      const errorMsg = err.response?.data?.message || 'No pudimos resetear tu contraseña. Intenta más tarde.';
+      // Show detailed error message
+      const errorMsg = err.response?.data?.message || err.message || 'No pudimos resetear tu contraseña. Intenta más tarde.';
       setError(errorMsg);
-    } finally {
       setIsLoading(false);
     }
   };
