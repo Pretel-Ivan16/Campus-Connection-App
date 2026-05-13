@@ -20,11 +20,15 @@ export default function Login() {
     try {
       setFormError(null);
       await login(email, password);
-      navigate('/home');
+      setTimeout(() => {
+        navigate('/home');
+      }, 100);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message;
       if (errorMessage?.includes('Invalid email or password')) {
         setFormError('Email no encontrado o contraseña incorrecta. ¿No tienes cuenta? Regístrate aquí');
+      } else if (errorMessage?.includes('verify your email')) {
+        setFormError('Por favor verifica tu email antes de iniciar sesión. Revisa tu correo y haz click en el enlace de verificación.');
       } else {
         setFormError(errorMessage || 'Error al iniciar sesión');
       }
