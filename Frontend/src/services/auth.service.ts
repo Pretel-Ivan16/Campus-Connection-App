@@ -4,7 +4,8 @@ import type { AuthResponse, User } from '../types/auth.types';
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const response = await apiClient.post('/auth/login', { email, password });
-    return response.data;
+    // El backend retorna {success, data, message}, extraemos data
+    return response.data.data;
   },
 
   register: async (email: string, password: string, name: string, faculty?: string): Promise<AuthResponse> => {
@@ -14,7 +15,8 @@ export const authService = {
       name,
       faculty,
     });
-    return response.data;
+    // El backend retorna {success, data, message}, extraemos data
+    return response.data.data;
   },
 
   getProfile: async (): Promise<User> => {
