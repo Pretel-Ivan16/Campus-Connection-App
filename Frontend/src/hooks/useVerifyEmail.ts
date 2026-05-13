@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/auth.service';
+import { useAuth } from './useAuth';
 
 type VerificationStatus = 'loading' | 'success' | 'error';
 
@@ -11,6 +11,7 @@ interface UseVerifyEmailReturn {
 
 export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn => {
   const navigate = useNavigate();
+  const { verifyEmailToken, isAuthenticated } = useAuth();
   const [status, setStatus] = useState<VerificationStatus>('loading');
   const [message, setMessage] = useState('Verificando tu email...');
 
@@ -23,13 +24,16 @@ export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn 
           return;
         }
 
-        await authService.verifyEmail(token);
+        await verifyEmailToken(token);
         setStatus('success');
         setMessage('¡Tu email ha sido verificado exitosamente!');
 
-        // Redirigir al login después de 3 segundos
+        // Redirigir según si está autenticado o no
         setTimeout(() => {
-          navigate('/login');
+          // Si está autenticado, va a home
+          // Si no está autenticado, va a login para que inicie sesión
+          const destination = isAuthenticated ? '/home' : '/login';
+          navigate(destination);
         }, 3000);
       } catch (error: any) {
         setStatus('error');
@@ -39,7 +43,7 @@ export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn 
     };
 
     verifyEmail();
-  }, [token, navigate]);
+  }, [token, navigate, verifyEmailToken, isAuthenticated]);
 
   return {
     status,
