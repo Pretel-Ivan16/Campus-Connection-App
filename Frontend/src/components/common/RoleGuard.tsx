@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import type { ReactNode } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 
 interface RoleGuardProps {
   allowedRoles?: ('admin' | 'user')[];

@@ -1,6 +1,5 @@
 import { useRegisterForm } from '../../hooks/useRegisterForm';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Check, X } from 'lucide-react';
 import FormHeader from '../../components/ui/FormHeader';
 import ErrorAlert from '../../components/ui/ErrorAlert';
 import TextInput from '../../components/ui/TextInput';
@@ -10,9 +9,13 @@ import AuthFooter from '../../components/ui/AuthFooter';
 const PasswordRequirement = ({ met, label }: { met: boolean; label: string }) => (
   <div className="flex items-center gap-2 text-sm">
     {met ? (
-      <Check className="w-4 h-4 text-green-500" />
+      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      </svg>
     ) : (
-      <X className="w-4 h-4 text-gray-300" />
+      <svg className="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+      </svg>
     )}
     <span className={met ? 'text-green-600' : 'text-gray-500'}>{label}</span>
   </div>
@@ -50,7 +53,7 @@ export default function Register() {
             placeholder="tu_usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            icon={User}
+            icon="user"
           />
 
           <TextInput
@@ -60,7 +63,7 @@ export default function Register() {
             placeholder="tu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            icon={Mail}
+            icon="mail"
           />
 
           <div>
@@ -71,7 +74,7 @@ export default function Register() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => handlePasswordChange(e.target.value)}
-              icon={Lock}
+              icon="lock"
             />
 
             {password && (
@@ -96,19 +99,23 @@ export default function Register() {
             placeholder="••••••••"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            icon={Lock}
+            icon="lock"
           />
 
           {password && confirmPassword && password !== confirmPassword && (
             <div className="text-sm text-red-600 flex items-center gap-2">
-              <X className="w-4 h-4" />
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
               Las contraseñas no coinciden
             </div>
           )}
 
           {password && confirmPassword && password === confirmPassword && (
             <div className="text-sm text-green-600 flex items-center gap-2">
-              <Check className="w-4 h-4" />
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
               Las contraseñas coinciden
             </div>
           )}

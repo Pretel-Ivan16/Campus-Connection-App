@@ -63,13 +63,29 @@ export const verifyUserEmail = async (token) => {
     // Verificar y decodificar el token
     const decoded = verifyToken(token);
 
-    // Buscar usuario por email (del payload del token)
-    const user = await User.findOne({ email: decoded.userId, verificationToken: token }).select(
-      '+verificationToken'
-    );
+    // Validar que el token sea un token de verificación
+    if (decoded.type !== 'email-verification') {
+      throw new Error('Invalid token type');
+    }
+
+    // El email está en el payload como userId
+    const email = decoded.userId;
+
+    // Buscar usuario por email
+    const user = await User.findOne({ email }).select('+verificationToken');
 
     if (!user) {
-      throw new Error('Invalid or expired verification token');
+      throw new Error('User not found');
+    }
+
+    // Verificar si el usuario ya está verificado
+    if (user.isVerified) {
+      return {
+        userId: user._id,
+        email: user.email,
+        isVerified: user.isVerified,
+        message: 'Email is already verified',
+      };
     }
 
     // Marcar usuario como verificado

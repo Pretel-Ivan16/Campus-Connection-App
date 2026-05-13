@@ -7,11 +7,13 @@ export const useResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (token: string, e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     // Validaciones
     if (!newPassword || !confirmPassword) {
@@ -32,14 +34,15 @@ export const useResetPassword = () => {
     setIsLoading(true);
     try {
       await authService.resetPassword(token, newPassword);
-      // Redirect a login after 2 seconds
+      // Success - show message and redirect to login after 2 seconds
+      setSuccess('¡Contraseña actualizada correctamente!');
       setTimeout(() => {
         navigate('/login');
       }, 2000);
     } catch (err: any) {
-      const errorMsg = err.response?.data?.message || 'No pudimos resetear tu contraseña. Intenta más tarde.';
+      // Show detailed error message
+      const errorMsg = err.response?.data?.message || err.message || 'No pudimos resetear tu contraseña. Intenta más tarde.';
       setError(errorMsg);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -50,6 +53,7 @@ export const useResetPassword = () => {
     confirmPassword,
     setConfirmPassword,
     error,
+    success,
     isLoading,
     handleSubmit,
   };

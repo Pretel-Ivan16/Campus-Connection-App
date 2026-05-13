@@ -1,4 +1,4 @@
-import { RoleGuard } from '../../components/RoleGuard';
+import { RoleGuard } from '../common/RoleGuard';
 import { Plus } from 'lucide-react';
 
 interface FacultyListHeaderProps {

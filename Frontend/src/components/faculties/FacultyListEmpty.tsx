@@ -1,4 +1,4 @@
-import { RoleGuard } from '../../components/RoleGuard';
+import { RoleGuard } from '../common/RoleGuard';
 
 export const FacultyListEmpty = () => {
   return (

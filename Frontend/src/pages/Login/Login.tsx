@@ -1,6 +1,5 @@
 import { useLoginForm } from '../../hooks/useLoginForm';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock } from 'lucide-react';
 import FormHeader from '../../components/ui/FormHeader';
 import ErrorAlert from '../../components/ui/ErrorAlert';
 import TextInput from '../../components/ui/TextInput';
@@ -26,7 +25,7 @@ export default function Login() {
             placeholder="tu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            icon={Mail}
+            icon="mail"
           />
 
           <TextInput
@@ -36,7 +35,7 @@ export default function Login() {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            icon={Lock}
+            icon="lock"
           />
 
           <SubmitButton isLoading={isLoading} label="Iniciar Sesión" loadingLabel="Iniciando sesión..." />

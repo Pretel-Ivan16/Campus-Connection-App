@@ -90,17 +90,27 @@ export const verifyEmail = async (req, res, next) => {
       message: result.message,
     });
   } catch (error) {
-    // Errores específicos
-    if (error.message.includes('Invalid') || error.message.includes('expired')) {
+    // Errores específicos - clasificar mejor
+    const errorMsg = error.message || '';
+    
+    if (errorMsg.includes('Invalid') || errorMsg.includes('expired') || errorMsg.includes('Token has expired') || errorMsg.includes('Invalid token')) {
       return res.status(401).json({
         success: false,
         message: 'Invalid or expired verification token',
       });
     }
 
+    if (errorMsg.includes('User not found')) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Error genérico
     res.status(500).json({
       success: false,
-      message: error.message || 'Error verifying email',
+      message: errorMsg || 'Error verifying email',
     });
   }
 };

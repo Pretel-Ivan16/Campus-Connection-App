@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthContextType, User } from '../types/auth.types';
 import { authService } from '../services/auth.service';
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -56,9 +56,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const register = async (email: string, password: string, name: string, faculty?: string) => {
+  const register = useCallback(async (email: string, password: string, name: string, faculty?: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -84,18 +84,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const verifyEmailToken = useCallback(async (emailToken: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await authService.verifyEmail(emailToken);
+
+      // Solo actualizar el estado si el usuario está autenticado
+      // Si verifica desde otra ventana sin autenticación, 
+      // simplemente retornamos la respuesta para que el frontend lo maneje
+      if (user && token) {
+        const updatedUser: User = {
+          ...user,
+          isVerified: response.isVerified || true,
+        };
+        
+        storage.saveUser(updatedUser);
+        setUser(updatedUser);
+      }
+
+      return response;
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Error al verificar el email';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, token]);
+
+  const logout = useCallback(() => {
     storage.clearAuth();
     setUser(null);
     setToken(null);
     setError(null);
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     setError(null);
-  };
+  }, []);
 
   const value: AuthContextType = {
     user,
@@ -105,6 +135,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     error,
     login,
     register,
+    verifyEmailToken,
     logout,
     clearError,
   };
