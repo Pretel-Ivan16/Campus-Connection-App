@@ -29,7 +29,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     // Si es error 401, probablemente el token expiró
-    if (error.response?.status === 401) {
+    // Pero NO redirigir si es una petición de login
+    if (error.response?.status === 401 && !error.config?.url?.includes('/auth/login')) {
       storage.clearAuth();
       window.location.href = '/login';
     }
