@@ -32,7 +32,6 @@ export const EditPostModal = ({
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<EditPostFormData>({
     resolver: zodResolver(editPostSchema),
@@ -66,14 +65,14 @@ export const EditPostModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-[#1a1d2e] border border-[#2a2a2a] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{ backgroundColor: '#0d0f16', borderColor: '#252933' }}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#2a2a2a]">
+        <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: '#252933' }}>
           <h2 className="text-2xl font-bold text-white">Editar Publicación</h2>
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-1 hover:bg-[#2a2a2a] rounded transition-colors disabled:opacity-50"
+            className="p-1 hover:opacity-70 rounded transition-colors disabled:opacity-50"
           >
             <X className="w-6 h-6 text-white" />
           </button>
@@ -91,13 +90,16 @@ export const EditPostModal = ({
               type="text"
               id="title"
               placeholder="Ingresa el título de la publicación"
-              className={`w-full px-4 py-2 bg-[#0d0f16] border rounded-lg text-white placeholder-[#6f6f6f] focus:outline-none focus:border-blue-500 transition-colors ${
-                errors.title ? 'border-red-500' : 'border-[#2a2a2a]'
+              className={`w-full px-4 py-2 border rounded-lg text-white placeholder-[#8f8f8f] focus:outline-none focus:border-[#6483ff] transition-colors ${
+                errors.title ? 'border-[#d40924]' : 'border-[#252933]'
               }`}
+              style={{
+                backgroundColor: '#171a24',
+              }}
               disabled={isSubmitting}
             />
             {errors.title && (
-              <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>
+              <p className="mt-1 text-sm" style={{ color: '#d40924' }}>{errors.title.message}</p>
             )}
           </div>
 
@@ -111,30 +113,38 @@ export const EditPostModal = ({
               id="content"
               placeholder="Escribe el contenido de la publicación..."
               rows={6}
-              className={`w-full px-4 py-2 bg-[#0d0f16] border rounded-lg text-white placeholder-[#6f6f6f] focus:outline-none focus:border-blue-500 transition-colors resize-none ${
-                errors.content ? 'border-red-500' : 'border-[#2a2a2a]'
+              className={`w-full px-4 py-2 border rounded-lg text-white placeholder-[#8f8f8f] focus:outline-none focus:border-[#6483ff] transition-colors resize-none ${
+                errors.content ? 'border-[#d40924]' : 'border-[#252933]'
               }`}
+              style={{
+                backgroundColor: '#171a24',
+              }}
               disabled={isSubmitting}
             />
             {errors.content && (
-              <p className="mt-1 text-sm text-red-500">{errors.content.message}</p>
+              <p className="mt-1 text-sm" style={{ color: '#d40924' }}>{errors.content.message}</p>
             )}
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-[#2a2a2a]">
+          <div className="flex gap-3 pt-4 border-t" style={{ borderColor: '#252933' }}>
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-[#2a2a2a] text-white rounded-lg hover:bg-[#2a2a2a] transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 text-white rounded-lg hover:opacity-80 transition-colors disabled:opacity-50 border"
+              style={{
+                borderColor: '#252933',
+                backgroundColor: 'transparent'
+              }}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
+              className="flex-1 px-4 py-2 text-white rounded-lg transition-colors disabled:opacity-50 font-medium hover:opacity-90"
+              style={{ backgroundColor: '#6483ff' }}
             >
               {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
             </button>
