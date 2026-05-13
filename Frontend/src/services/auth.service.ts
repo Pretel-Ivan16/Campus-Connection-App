@@ -21,22 +21,22 @@ export const authService = {
 
   getProfile: async (): Promise<User> => {
     const response = await apiClient.get('/auth/profile');
-    return response.data;
+    return response.data.data;
   },
 
   verifyEmail: async (token: string): Promise<any> => {
     const response = await apiClient.get(`/auth/verify-email/${token}`);
-    return response.data;
+    return response.data.data;
   },
 
   recoverPassword: async (email: string): Promise<any> => {
     const response = await apiClient.post('/auth/recover-password', { email });
-    return response.data;
+    return response.data.data;
   },
 
   resetPassword: async (token: string, newPassword: string): Promise<any> => {
     const response = await apiClient.post('/auth/reset-password', { token, newPassword });
-    return response.data;
+    return response.data.data;
   },
 
   logout: () => {
