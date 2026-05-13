@@ -1,14 +1,12 @@
 import { User } from 'lucide-react';
 
 interface UserButtonProps {
-  email: string;
+  name: string;
   onClick: () => void;
   isActive?: boolean;
 }
 
-export default function UserButton({ email, onClick, isActive }: UserButtonProps) {
-  const username = email?.split('@')[0] || 'Usuario';
-
+export default function UserButton({ name, onClick, isActive }: UserButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -19,7 +17,7 @@ export default function UserButton({ email, onClick, isActive }: UserButtonProps
       }`}
     >
       <User size={20} />
-      <span>{username}</span>
+      <span>{name || 'Usuario'}</span>
     </button>
   );
 }
