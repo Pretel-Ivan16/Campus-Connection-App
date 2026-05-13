@@ -113,6 +113,7 @@ export const loginUser = async (email, password) => {
     return {
       token,
       userId: user._id,
+      name: user.name,
       email: user.email,
       isVerified: user.isVerified,
       message: 'Login successful',
