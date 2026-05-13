@@ -21,7 +21,11 @@ export type RegisterRequest = {
 
 export type AuthResponse = {
   token: string;
-  user: User;
+  userId: string;
+  email: string;
+  isVerified?: boolean;
+  name?: string;
+  message?: string;
 };
 
 export type AuthContextType = {
