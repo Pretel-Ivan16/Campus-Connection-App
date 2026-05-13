@@ -11,7 +11,7 @@ interface UseVerifyEmailReturn {
 
 export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn => {
   const navigate = useNavigate();
-  const { verifyEmailToken, isAuthenticated } = useAuth();
+  const { verifyEmailToken, logout } = useAuth();
   const [status, setStatus] = useState<VerificationStatus>('loading');
   const [message, setMessage] = useState('Verificando tu email...');
 
@@ -28,12 +28,11 @@ export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn 
         setStatus('success');
         setMessage('¡Tu email ha sido verificado exitosamente!');
 
-        // Redirigir según si está autenticado o no
+        // Redirigir al login después de 3 segundos
+        // Primero hacer logout para limpiar cualquier token previo
         setTimeout(() => {
-          // Si está autenticado, va a home
-          // Si no está autenticado, va a login para que inicie sesión
-          const destination = isAuthenticated ? '/home' : '/login';
-          navigate(destination);
+          logout();
+          navigate('/login');
         }, 3000);
       } catch (error: any) {
         setStatus('error');
@@ -43,7 +42,7 @@ export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn 
     };
 
     verifyEmail();
-  }, [token, navigate, verifyEmailToken, isAuthenticated]);
+  }, [token, navigate, verifyEmailToken, logout]);
 
   return {
     status,
