@@ -1,0 +1,48 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/auth.service';
+
+type VerificationStatus = 'loading' | 'success' | 'error';
+
+interface UseVerifyEmailReturn {
+  status: VerificationStatus;
+  message: string;
+}
+
+export const useVerifyEmail = (token: string | undefined): UseVerifyEmailReturn => {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState<VerificationStatus>('loading');
+  const [message, setMessage] = useState('Verificando tu email...');
+
+  useEffect(() => {
+    const verifyEmail = async () => {
+      try {
+        if (!token) {
+          setStatus('error');
+          setMessage('Token de verificación inválido o faltante');
+          return;
+        }
+
+        await authService.verifyEmail(token);
+        setStatus('success');
+        setMessage('¡Tu email ha sido verificado exitosamente!');
+
+        // Redirigir al login después de 3 segundos
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      } catch (error: any) {
+        setStatus('error');
+        const errorMessage = error?.response?.data?.message || 'Error al verificar el email';
+        setMessage(errorMessage);
+      }
+    };
+
+    verifyEmail();
+  }, [token, navigate]);
+
+  return {
+    status,
+    message,
+  };
+};
