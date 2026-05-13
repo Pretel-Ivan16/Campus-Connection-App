@@ -19,7 +19,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (savedToken && savedUser) {
       setToken(savedToken);
-      setUser(savedUser);
+      // Asegurar que el usuario siempre tenga un role
+      const userWithRole = {
+        ...savedUser,
+        role: savedUser.role || 'user',
+      };
+      setUser(userWithRole);
     }
 
     setIsLoading(false);
@@ -38,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: response.name,
         email: response.email,
         isVerified: response.isVerified,
+        role: response.role || 'user',
       };
       storage.saveUser(userData);
 
@@ -65,6 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: response.email,
         name: response.name,
         isVerified: response.isVerified,
+        role: response.role || 'user',
       };
       storage.saveUser(userData);
 
