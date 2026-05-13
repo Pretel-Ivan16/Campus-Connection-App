@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
-import { Logo } from "../../Logo"
-import TittleLogo from "../../TittleLogo"
+import { Logo } from "../../ui/Logo"
+import TittleLogo from "../../ui/TittleLogo"
 
 function BrandLogo() {
   return (
