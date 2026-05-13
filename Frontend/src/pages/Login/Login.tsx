@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useLoginForm } from '../../hooks/useLoginForm';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
 import { Mail, Lock } from 'lucide-react';
 import FormHeader from '../../components/ui/FormHeader';
 import ErrorAlert from '../../components/ui/ErrorAlert';
@@ -10,37 +9,14 @@ import AuthFooter from '../../components/ui/AuthFooter';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, isLoading, error: authError } = useAuth();
-  const [formError, setFormError] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setFormError(null);
-      await login(email, password);
-      setTimeout(() => {
-        navigate('/home');
-      }, 100);
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message;
-      if (errorMessage?.includes('Invalid email or password')) {
-        setFormError('Email no encontrado o contraseña incorrecta. ¿No tienes cuenta? Regístrate aquí');
-      } else if (errorMessage?.includes('verify your email')) {
-        setFormError('Por favor verifica tu email antes de iniciar sesión. Revisa tu correo y haz click en el enlace de verificación.');
-      } else {
-        setFormError(errorMessage || 'Error al iniciar sesión');
-      }
-    }
-  };
+  const { formError, email, setEmail, password, setPassword, handleSubmit, isLoading } = useLoginForm();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         <FormHeader title="CampusConnect" subtitle="Inicia sesión en tu cuenta" />
 
-        {(authError || formError) && <ErrorAlert message={authError || formError || ''} />}
+        {formError && <ErrorAlert message={formError} />}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <TextInput
