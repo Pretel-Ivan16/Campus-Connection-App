@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { useAuth } from "../../hooks/useAuth"
 
 function HeroSection() {
@@ -13,9 +14,9 @@ function HeroSection() {
         Conecta con otros estudiantes, comparte experiencias y crece académicamente en nuestra comunidad
       </p>
       <div>
-        <a href={href} className="text-white text-2xl bg-[#6483ff] hover:bg-[#5a76e8] font-semibold py-3 px-8 rounded-lg transition">
+        <Link to={href} className="text-white text-2xl bg-[#6483ff] hover:bg-[#5a76e8] font-semibold py-3 px-8 rounded-lg transition inline-block">
           VER MÁS
-        </a>
+        </Link>
       </div>
     </section>
   )

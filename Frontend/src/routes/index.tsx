@@ -4,6 +4,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import Home from '../pages/Home';
 import Login from '../pages/Login/Login';
+import Foros from '../pages/Foros';
 import Layout from '../components/layout/Layout';
 
 export default function AppRoutes() {
@@ -24,6 +25,7 @@ export default function AppRoutes() {
               }
             >
               <Route path="/home" element={<Home />} />
+              <Route path="/foros" element={<Foros />} />
               <Route path="/" element={<Navigate to="/home" replace />} />
               {/* Aquí irán más rutas protegidas */}
             </Route>
