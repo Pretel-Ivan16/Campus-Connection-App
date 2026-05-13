@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useResetPassword } from '../../hooks/useResetPassword';
 import FormHeader from '../../components/ui/FormHeader';
 import ErrorAlert from '../../components/ui/ErrorAlert';
+import SuccessAlert from '../../components/ui/SuccessAlert';
 import TextInput from '../../components/ui/TextInput';
 import SubmitButton from '../../components/ui/SubmitButton';
 
@@ -14,6 +15,7 @@ export default function ResetPassword() {
     confirmPassword,
     setConfirmPassword,
     error,
+    success,
     isLoading,
     handleSubmit,
   } = useResetPassword();
@@ -56,6 +58,7 @@ export default function ResetPassword() {
         />
 
         {error && <ErrorAlert message={error} />}
+        {success && <SuccessAlert message={success} />}
 
         <form onSubmit={(e) => handleSubmit(token, e)} className="space-y-5">
           <TextInput
@@ -66,6 +69,7 @@ export default function ResetPassword() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             icon="lock"
+            disabled={success ? true : false}
           />
 
           <TextInput
@@ -76,12 +80,14 @@ export default function ResetPassword() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             icon="lock"
+            disabled={success ? true : false}
           />
 
           <SubmitButton 
             isLoading={isLoading} 
             label="Resetear Contraseña" 
             loadingLabel="Resetando..." 
+            disabled={success ? true : false}
           />
         </form>
       </div>
