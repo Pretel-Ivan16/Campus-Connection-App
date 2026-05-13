@@ -4,6 +4,8 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import Home from '../pages/Home';
 import Login from '../pages/Login/Login';
+import Register from '../pages/Register/Register';
+import VerifyEmail from '../pages/VerifyEmail/VerifyEmail';
 import RecoverPassword from '../pages/RecoverPassword/RecoverPassword';
 import ResetPassword from '../pages/ResetPassword/ResetPassword';
 import Foros from '../pages/Foros';
@@ -17,6 +19,8 @@ export default function AppRoutes() {
           <Routes>
             {/* Rutas públicas */}
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email/:token" element={<VerifyEmail />} />
             <Route path="/recover-password" element={<RecoverPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
 
