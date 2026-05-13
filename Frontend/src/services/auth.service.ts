@@ -29,6 +29,16 @@ export const authService = {
     return response.data;
   },
 
+  recoverPassword: async (email: string): Promise<any> => {
+    const response = await apiClient.post('/auth/recover-password', { email });
+    return response.data;
+  },
+
+  resetPassword: async (token: string, newPassword: string): Promise<any> => {
+    const response = await apiClient.post('/auth/reset-password', { token, newPassword });
+    return response.data;
+  },
+
   logout: () => {
     // El logout es local, solo limpiar datos
     return Promise.resolve();
