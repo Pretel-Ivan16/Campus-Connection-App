@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { Faculty } from '../../services/faculty.service';
-import { RoleGuard } from '../RoleGuard';
+import { RoleGuard } from '../common/RoleGuard';
 import { Trash2, Edit2 } from 'lucide-react';
 
 interface FacultyCardProps {
