@@ -7,11 +7,13 @@ export const useResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (token: string, e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     // Validaciones
     if (!newPassword || !confirmPassword) {
@@ -33,7 +35,7 @@ export const useResetPassword = () => {
     try {
       await authService.resetPassword(token, newPassword);
       // Success - show message and redirect to login after 2 seconds
-      setError(null);
+      setSuccess('¡Contraseña actualizada correctamente!');
       setTimeout(() => {
         navigate('/login');
       }, 2000);
@@ -51,6 +53,7 @@ export const useResetPassword = () => {
     confirmPassword,
     setConfirmPassword,
     error,
+    success,
     isLoading,
     handleSubmit,
   };
