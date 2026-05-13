@@ -108,4 +108,55 @@ Errors:
  */
 router.get("/profile", authMiddleware, authController.getProfile);
 
+/*
+
+POST /auth/recover-password
+  Envía un email para recuperar la contraseña
+
+  Body:
+  {
+    email: string (requerido),
+    frontendUrl: string (opcional)
+  }
+
+  Response: 200
+  {
+    success: true,
+    data: { message: "..." },
+    message: "If the email exists, you will receive a password recovery link"
+  }
+
+Errors:
+  - 400: Email missing or invalid format
+  - 200: Always returns 200 for security (no reveal if email exists)
+
+ */
+router.post("/recover-password", authController.requestPasswordRecovery);
+
+/*
+
+POST /auth/reset-password
+  Resetea la contraseña del usuario
+
+  Body:
+  {
+    token: string (JWT de recuperación, válido por 1 hora),
+    newPassword: string (requerido, mín 6 caracteres)
+  }
+
+  Response: 200
+  {
+    success: true,
+    data: { message: "Password reset successfully" },
+    message: "Password reset successfully"
+  }
+
+Errors:
+  - 400: Token or password missing, or password too short
+  - 401: Invalid or expired token
+  - 500: Server error
+
+ */
+router.post("/reset-password", authController.resetUserPassword);
+
 export default router;
