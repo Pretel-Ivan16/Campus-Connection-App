@@ -1,4 +1,3 @@
-import { XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface VerifyEmailErrorProps {
@@ -10,7 +9,9 @@ export default function VerifyEmailError({ message }: VerifyEmailErrorProps) {
 
   return (
     <div className="flex flex-col items-center justify-center py-8">
-      <XCircle className="w-16 h-16 text-red-500 mb-4" />
+      <svg className="w-16 h-16 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
       <p className="text-center text-gray-600 mb-6">{message}</p>
       <button
         onClick={() => navigate('/login')}
