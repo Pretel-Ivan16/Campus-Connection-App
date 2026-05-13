@@ -24,6 +24,7 @@ export const storage = {
       email: user.email || '',
       name: user.name,
       isVerified: user.isVerified,
+      role: user.role || 'user',
       faculty: user.faculty,
     };
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
