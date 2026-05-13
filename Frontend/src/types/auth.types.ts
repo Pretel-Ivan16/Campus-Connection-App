@@ -4,6 +4,7 @@ export type User = {
   name?: string;
   faculty?: string;
   isVerified?: boolean;
+  role?: 'user' | 'admin';
   createdAt?: string;
 };
 
@@ -25,6 +26,7 @@ export type AuthResponse = {
   email: string;
   isVerified?: boolean;
   name?: string;
+  role?: 'user' | 'admin';
   message?: string;
 };
 
