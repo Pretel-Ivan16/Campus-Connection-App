@@ -4,6 +4,8 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import Home from '../pages/Home';
 import Login from '../pages/Login/Login';
+import RecoverPassword from '../pages/RecoverPassword/RecoverPassword';
+import ResetPassword from '../pages/ResetPassword/ResetPassword';
 import Foros from '../pages/Foros';
 import Layout from '../components/layout/Layout';
 
@@ -15,6 +17,8 @@ export default function AppRoutes() {
           <Routes>
             {/* Rutas públicas */}
             <Route path="/login" element={<Login />} />
+            <Route path="/recover-password" element={<RecoverPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
 
             {/* Rutas protegidas con layout */}
             <Route
