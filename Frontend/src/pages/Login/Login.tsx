@@ -40,6 +40,16 @@ export default function Login() {
           />
 
           <SubmitButton isLoading={isLoading} label="Iniciar Sesión" loadingLabel="Iniciando sesión..." />
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => navigate('/recover-password')}
+              className="text-sm text-gray-500 hover:text-[#6483ff] transition-colors"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
         </form>
 
         <AuthFooter
