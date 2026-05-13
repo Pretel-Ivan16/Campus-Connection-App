@@ -86,6 +86,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const verifyEmailToken = async (emailToken: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await authService.verifyEmail(emailToken);
+
+      // Solo actualizar el estado si el usuario está autenticado
+      // Si verifica desde otra ventana sin autenticación, 
+      // simplemente retornamos la respuesta para que el frontend lo maneje
+      if (user && token) {
+        const updatedUser: User = {
+          ...user,
+          isVerified: response.isVerified || true,
+        };
+        
+        storage.saveUser(updatedUser);
+        setUser(updatedUser);
+      }
+
+      return response;
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Error al verificar el email';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     storage.clearAuth();
     setUser(null);
@@ -105,6 +135,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     error,
     login,
     register,
+    verifyEmailToken,
     logout,
     clearError,
   };
