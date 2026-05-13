@@ -1,4 +1,9 @@
+import { useAuth } from "../../hooks/useAuth"
+
 function HeroSection() {
+  const { isAuthenticated } = useAuth();
+  const href = isAuthenticated ? "/foros" : "/publicaciones";
+
   return (
     <section className="container mx-auto  px-20 py-20 text-center rounded-xl bg-[#0a0c12]">
       <h1 className="text-5xl font-bold text-[#eee] mb-6">
@@ -8,7 +13,7 @@ function HeroSection() {
         Conecta con otros estudiantes, comparte experiencias y crece académicamente en nuestra comunidad
       </p>
       <div>
-        <a href="/login" className="text-white text-2xl bg-[#6483ff] hover:bg-[#5a76e8] font-semibold py-3 px-8 rounded-lg transition">
+        <a href={href} className="text-white text-2xl bg-[#6483ff] hover:bg-[#5a76e8] font-semibold py-3 px-8 rounded-lg transition">
           VER MÁS
         </a>
       </div>
