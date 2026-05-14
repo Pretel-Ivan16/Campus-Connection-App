@@ -17,7 +17,7 @@ export class PostRepository extends BaseRepository {
   static POPULATE_OPTIONS = [
     {
       path: 'authorId',
-      select: 'email createdAt',
+      select: 'name email',
     },
     {
       path: 'facultyId',

@@ -24,6 +24,18 @@ router.post('/', authMiddleware, postController.createPost);
 router.get('/', postController.getAllPosts);
 
 /*
+  GET /api/posts/author/:authorId
+  Obtiene posts de un autor específico
+*/
+router.get('/author/:authorId', postController.getPostsByAuthor);
+
+/*
+  GET /api/posts/faculty/:facultyId
+  Obtiene posts de una facultad específica
+*/
+router.get('/faculty/:facultyId', postController.getPostsByFaculty);
+
+/*
   GET /api/posts/:id
   Obtiene un post por ID
 */
@@ -40,17 +52,5 @@ router.put('/:id', authMiddleware, postController.updatePost);
   Elimina un post (requiere autenticación)
 */
 router.delete('/:id', authMiddleware, postController.deletePost);
-
-/*
-  GET /api/posts/author/:authorId
-  Obtiene posts de un autor específico
-*/
-router.get('/author/:authorId', postController.getPostsByAuthor);
-
-/*
-  GET /api/posts/faculty/:facultyId
-  Obtiene posts de una facultad específica
-*/
-router.get('/faculty/:facultyId', postController.getPostsByFaculty);
 
 export default router;

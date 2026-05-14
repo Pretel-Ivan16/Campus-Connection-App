@@ -11,6 +11,41 @@ import { ServerError } from '../helpers/errors.js';
 
 /*
 
+  Transforma un post para que coincida con la estructura esperada del frontend
+  Convierte authorId objeto a authorId string + author object
+
+*/
+const transformPost = (post) => {
+  if (!post) return null;
+
+  const transformed = {
+    _id: post._id,
+    title: post.title,
+    content: post.content,
+    authorId: typeof post.authorId === 'object' ? post.authorId._id : post.authorId,
+    facultyId: typeof post.facultyId === 'object' ? post.facultyId._id : post.facultyId,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
+  };
+
+  // Agregar author si está poblado
+  if (post.authorId && typeof post.authorId === 'object') {
+    transformed.author = {
+      name: post.authorId.name,
+      email: post.authorId.email,
+    };
+  }
+
+  return transformed;
+};
+
+const transformPosts = (posts) => {
+  if (!Array.isArray(posts)) return [];
+  return posts.map(transformPost);
+};
+
+/*
+
   Crea un nuevo post
   POST /posts
 
@@ -31,7 +66,7 @@ export const createPost = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Post created successfully',
-      data: newPost,
+      data: transformPost(newPost),
     });
   } catch (error) {
     // Manejo de errores
@@ -61,7 +96,7 @@ export const getAllPosts = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Posts fetched successfully',
-      data: posts,
+      data: transformPosts(posts),
     });
   } catch (error) {
     // Manejo de errores
@@ -93,7 +128,7 @@ export const getPostById = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Post fetched successfully',
-      data: post,
+      data: transformPost(post),
     });
   } catch (error) {
     // Manejo de errores
@@ -128,7 +163,7 @@ export const updatePost = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Post updated successfully',
-      data: updatedPost,
+      data: transformPost(updatedPost),
     });
   } catch (error) {
     // Manejo de errores
@@ -194,7 +229,7 @@ export const getPostsByAuthor = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Posts by author fetched successfully',
-      data: posts,
+      data: transformPosts(posts),
     });
   } catch (error) {
     // Manejo de errores
@@ -226,7 +261,7 @@ export const getPostsByFaculty = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Posts by faculty fetched successfully',
-      data: posts,
+      data: transformPosts(posts),
     });
   } catch (error) {
     // Manejo de errores
