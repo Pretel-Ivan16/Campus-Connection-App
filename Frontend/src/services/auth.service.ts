@@ -14,6 +14,7 @@ export const authService = {
       password,
       name,
       faculty,
+      frontendUrl: window.location.origin,
     });
     // El backend retorna {success, data, message}, extraemos data
     return response.data.data;

@@ -36,8 +36,8 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // Obtener URL del frontend (puede venir en el body o usar default)
-    const frontendUrl = req.body.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:8080';
+    // Obtener URL del frontend (puede venir en el body, headers, o usar default)
+    const frontendUrl = req.body.frontendUrl || req.headers.origin || process.env.FRONTEND_URL || 'http://localhost:5173';
 
     // Registrar usuario
     const result = await registerUser(email, password, name, frontendUrl);
