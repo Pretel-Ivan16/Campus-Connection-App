@@ -1,0 +1,82 @@
+{
+  "info": {
+    "_postman_id": "30ce1a10-568a-4649-90f1-9da2027ba526",
+    "name": "API posts",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54020349",
+    "_collection_link": "https://go.postman.co/collection/54020349-30ce1a10-568a-4649-90f1-9da2027ba526?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "api/posts",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vault:json-web-token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Mi primer post\",\r\n  \"content\": \"Contenido del post\",\r\n  \"facultyId\": \"69ff625cb51ef93eae6ef886\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/posts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "posts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/posts1",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vault:json-web-token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Post Actualizado\",\r\n  \"content\": \"Nuevo Contenido\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/posts/69ff63a946c762c5afdb4db2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "posts",
+            "69ff63a946c762c5afdb4db2"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

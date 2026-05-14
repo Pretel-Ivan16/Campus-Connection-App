@@ -1,0 +1,144 @@
+{
+  "info": {
+    "_postman_id": "0647cc15-0006-464c-98b2-904fd6560534",
+    "name": "API auth",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54020349",
+    "_collection_link": "https://go.postman.co/collection/54020349-0647cc15-0006-464c-98b2-904fd6560534?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "auth/register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"gonzalo2004.2017@gmail.com\",\r\n    \"password\": \"pelu123.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "auth/verify",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/verify-email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYW1wdXNjb25uZWN0aW9uMTZAZ21haWwuY29tIiwidHlwZSI6ImVtYWlsLXZlcmlmaWNhdGlvbiIsImlhdCI6MTc3ODM1NDM3OSwiZXhwIjoxNzc4NDQwNzc5fQ.mzuNnrzbEtDaAXnuKQ_A93a7x_MAAlW41MTLmvhBY8M",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "auth",
+            "verify-email",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYW1wdXNjb25uZWN0aW9uMTZAZ21haWwuY29tIiwidHlwZSI6ImVtYWlsLXZlcmlmaWNhdGlvbiIsImlhdCI6MTc3ODM1NDM3OSwiZXhwIjoxNzc4NDQwNzc5fQ.mzuNnrzbEtDaAXnuKQ_A93a7x_MAAlW41MTLmvhBY8M"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "auth/login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"gonzalo2004.2017@gmail.com\",\r\n    \"password\": \"pelu123.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "auth/profile",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vault:json-web-token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Mi primer post\",\r\n  \"content\": \"Contenido del post\",\r\n  \"category\": \"General\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/profile",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "auth",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

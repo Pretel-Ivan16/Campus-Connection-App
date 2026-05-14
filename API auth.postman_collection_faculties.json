@@ -1,0 +1,46 @@
+{
+  "info": {
+    "_postman_id": "679eab65-d3c1-4321-9780-b404698d1d64",
+    "name": "API faculty",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54020349",
+    "_collection_link": "https://go.postman.co/collection/54020349-679eab65-d3c1-4321-9780-b404698d1d64?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "/api/faculties",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vault:json-web-token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Tecnicatura Universitaria en IA\",\r\n  \"description\": \"Facultad de Ciencias Exactas, Ingeniería y Agrimensura\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/faculties",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "faculties"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
