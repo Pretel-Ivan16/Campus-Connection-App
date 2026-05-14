@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios';
 import { storage } from './storage';
 
-const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'https://campus-connection-app-production.up.railway.app/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
