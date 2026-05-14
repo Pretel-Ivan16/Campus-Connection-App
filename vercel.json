@@ -1,0 +1,16 @@
+{
+  "buildCommand": "cd Frontend && npm install && npm run build && cd ../Backend && npm install",
+  "outputDirectory": "Frontend/dist",
+  "framework": "vite",
+  "functions": {
+    "Backend/src/server.js": {
+      "runtime": "nodejs24.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "Backend/src/server.js"
+    }
+  ]
+}
