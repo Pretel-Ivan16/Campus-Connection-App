@@ -37,10 +37,12 @@ export const registerUser = async (email, password, name, frontendUrl = 'http://
 
     await newUser.save();
 
-    // Enviar email de verificación
-    await sendVerificationEmail(email, verificationToken, frontendUrl);
+    // Enviar email de verificación en background (sin esperar)
+    sendVerificationEmail(email, verificationToken, frontendUrl).catch(err => 
+      console.error('❌ Error enviando email en background:', err.message)
+    );
 
-    // Devolver usuario sin password
+    // Devolver usuario sin password inmediatamente
     return {
       userId: newUser._id,
       name: newUser.name,
@@ -214,8 +216,10 @@ export const recoverPassword = async (email, frontendUrl = 'http://localhost:300
     user.passwordResetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     await user.save();
 
-    // Enviar email de recuperación
-    await sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl);
+    // Enviar email de recuperación en background (sin esperar)
+    sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl).catch(err => 
+      console.error('❌ Error enviando email en background:', err.message)
+    );
 
     return {
       message: 'Password recovery email sent successfully. Check your inbox.',
