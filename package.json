@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node Backend/src/server.js",
     "dev": "nodemon Backend/src/server.js",
-    "build": "cd Backend && npm install"
+    "build": "cd Frontend && npm install && npm run build && cd ../Backend && npm install"
   },
   "engines": {
     "node": "24.x"
@@ -16,5 +16,8 @@
     "react-hook-form": "^7.75.0",
     "react-hot-toast": "^2.6.0",
     "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
