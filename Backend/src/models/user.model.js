@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: [true, 'Name is required'],
+      trim: true,
+    },
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -25,6 +30,19 @@ const userSchema = new mongoose.Schema(
     verificationToken: {
       type: String,
       select: false, // No incluir token por defecto en queries
+    },
+    passwordResetToken: {
+      type: String,
+      select: false, // No incluir token por defecto en queries
+    },
+    passwordResetTokenExpiry: {
+      type: Date,
+      select: false, // No incluir expiry por defecto en queries
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
     },
   },
   {

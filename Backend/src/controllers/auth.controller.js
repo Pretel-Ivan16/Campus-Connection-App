@@ -1,21 +1,21 @@
-import { registerUser, verifyUserEmail, loginUser, getUserById } from '../services/auth.service.js';
+import { registerUser, verifyUserEmail, loginUser, getUserById, recoverPassword, resetPassword } from '../services/auth.service.js';
 
 /*
 
  * Controller para registrar un nuevo usuario
  * POST /auth/register
- * Body: { email, password }
+ * Body: { email, password, name }
 
 */
 export const register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
 
     // Validar inputs
-    if (!email || !password) {
+    if (!email || !password || !name) {
       return res.status(400).json({
         success: false,
-        message: 'Email and password are required',
+        message: 'Email, password, and name are required',
       });
     }
 
@@ -40,7 +40,7 @@ export const register = async (req, res, next) => {
     const frontendUrl = req.body.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:8080';
 
     // Registrar usuario
-    const result = await registerUser(email, password, frontendUrl);
+    const result = await registerUser(email, password, name, frontendUrl);
 
     res.status(201).json({
       success: true,
@@ -90,17 +90,27 @@ export const verifyEmail = async (req, res, next) => {
       message: result.message,
     });
   } catch (error) {
-    // Errores específicos
-    if (error.message.includes('Invalid') || error.message.includes('expired')) {
+    // Errores específicos - clasificar mejor
+    const errorMsg = error.message || '';
+    
+    if (errorMsg.includes('Invalid') || errorMsg.includes('expired') || errorMsg.includes('Token has expired') || errorMsg.includes('Invalid token')) {
       return res.status(401).json({
         success: false,
         message: 'Invalid or expired verification token',
       });
     }
 
+    if (errorMsg.includes('User not found')) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Error genérico
     res.status(500).json({
       success: false,
-      message: error.message || 'Error verifying email',
+      message: errorMsg || 'Error verifying email',
     });
   }
 };
@@ -192,6 +202,111 @@ export const getProfile = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: error.message || 'Error retrieving profile',
+    });
+  }
+};
+
+/*
+
+ * Controller para solicitar recuperación de contraseña
+ * POST /auth/recover-password
+ * Body: { email, frontendUrl (opcional) }
+
+*/
+export const requestPasswordRecovery = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    // Validar email
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required',
+      });
+    }
+
+    // Validar formato de email
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid email address',
+      });
+    }
+
+    // Obtener URL del frontend
+    const frontendUrl = req.body.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:3000';
+
+    // Solicitar recuperación de contraseña
+    const result = await recoverPassword(email, frontendUrl);
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: result.message,
+    });
+  } catch (error) {
+    // Por seguridad, no revelar si el email existe o no
+    // Devolver respuesta exitosa en ambos casos
+    console.error('Password recovery error:', error.message);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message: 'If the email exists, you will receive a password recovery link',
+      },
+      message: 'If the email exists, you will receive a password recovery link',
+    });
+  }
+};
+
+/*
+
+ * Controller para resetear la contraseña
+ * POST /auth/reset-password
+ * Body: { token, newPassword }
+
+*/
+export const resetUserPassword = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    // Validar inputs
+    if (!token || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token and new password are required',
+      });
+    }
+
+    // Validar longitud de contraseña
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long',
+      });
+    }
+
+    // Resetear contraseña
+    const result = await resetPassword(token, newPassword);
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: result.message,
+    });
+  } catch (error) {
+    // Errores específicos
+    if (error.message.includes('Invalid') || error.message.includes('expired')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid or expired reset token',
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error resetting password',
     });
   }
 };

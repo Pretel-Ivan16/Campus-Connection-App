@@ -1,12 +1,12 @@
 import User from '../models/user.model.js';
 import { hashPassword, comparePassword } from '../utils/hash.js';
 import { generateToken, generateVerificationToken, verifyToken } from '../utils/jwt.js';
-import { sendVerificationEmail } from '../utils/email.js';
+import { sendVerificationEmail, sendPasswordRecoveryEmail } from '../utils/email.js';
 
-export const registerUser = async (email, password, frontendUrl = 'http://localhost:8080') => {
+export const registerUser = async (email, password, name, frontendUrl = 'http://localhost:8080') => {
   try {
-    if (!email || !password) {
-      throw new Error('Email and password are required');
+    if (!email || !password || !name) {
+      throw new Error('Email, password, and name are required');
     }
 
     // Validar que email no exista
@@ -21,12 +21,18 @@ export const registerUser = async (email, password, frontendUrl = 'http://localh
     // Generar token de verificación
     const verificationToken = generateVerificationToken(email);
 
+    // Verificar si existe algún admin en la base de datos
+    const adminExists = await User.findOne({ role: 'admin' });
+    const userRole = adminExists ? 'user' : 'admin'; // Si no hay admin, el primero es admin
+
     // Crear usuario
     const newUser = new User({
+      name,
       email,
       password: hashedPassword,
       verificationToken,
       isVerified: false,
+      role: userRole,
     });
 
     await newUser.save();
@@ -37,8 +43,10 @@ export const registerUser = async (email, password, frontendUrl = 'http://localh
     // Devolver usuario sin password
     return {
       userId: newUser._id,
+      name: newUser.name,
       email: newUser.email,
       isVerified: newUser.isVerified,
+      role: newUser.role,
       message: 'User registered successfully. Check your email to verify your account.',
     };
   } catch (error) {
@@ -55,13 +63,29 @@ export const verifyUserEmail = async (token) => {
     // Verificar y decodificar el token
     const decoded = verifyToken(token);
 
-    // Buscar usuario por email (del payload del token)
-    const user = await User.findOne({ email: decoded.userId, verificationToken: token }).select(
-      '+verificationToken'
-    );
+    // Validar que el token sea un token de verificación
+    if (decoded.type !== 'email-verification') {
+      throw new Error('Invalid token type');
+    }
+
+    // El email está en el payload como userId
+    const email = decoded.userId;
+
+    // Buscar usuario por email
+    const user = await User.findOne({ email }).select('+verificationToken');
 
     if (!user) {
-      throw new Error('Invalid or expired verification token');
+      throw new Error('User not found');
+    }
+
+    // Verificar si el usuario ya está verificado
+    if (user.isVerified) {
+      return {
+        userId: user._id,
+        email: user.email,
+        isVerified: user.isVerified,
+        message: 'Email is already verified',
+      };
     }
 
     // Marcar usuario como verificado
@@ -106,12 +130,15 @@ export const loginUser = async (email, password) => {
     }
 
     // Generar JWT
-    const token = generateToken({ userId: user._id, email: user.email }, '24h');
+    const token = generateToken({ userId: user._id, email: user.email, role: user.role }, '24h');
 
     return {
       token,
       userId: user._id,
+      name: user.name,
       email: user.email,
+      isVerified: user.isVerified,
+      role: user.role,
       message: 'Login successful',
     };
   } catch (error) {
@@ -135,6 +162,7 @@ export const getUserById = async (userId) => {
       userId: user._id,
       email: user.email,
       isVerified: user.isVerified,
+      role: user.role,
       createdAt: user.createdAt,
     };
   } catch (error) {
@@ -162,5 +190,79 @@ export const getUserByEmail = async (email) => {
     };
   } catch (error) {
     throw new Error(`Error getting user: ${error.message}`);
+  }
+};
+
+export const recoverPassword = async (email, frontendUrl = 'http://localhost:3000') => {
+  try {
+    if (!email) {
+      throw new Error('Email is required');
+    }
+
+    // Buscar usuario por email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Generar token de recuperación (válido por 1 hora)
+    const recoveryToken = generateVerificationToken(email);
+
+    // Guardar token de recuperación en el usuario
+    user.passwordResetToken = recoveryToken;
+    user.passwordResetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+    await user.save();
+
+    // Enviar email de recuperación
+    await sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl);
+
+    return {
+      message: 'Password recovery email sent successfully. Check your inbox.',
+    };
+  } catch (error) {
+    throw new Error(`Error recovering password: ${error.message}`);
+  }
+};
+
+export const resetPassword = async (resetToken, newPassword) => {
+  try {
+    if (!resetToken || !newPassword) {
+      throw new Error('Reset token and new password are required');
+    }
+
+    // Validar longitud de contraseña
+    if (newPassword.length < 6) {
+      throw new Error('Password must be at least 6 characters long');
+    }
+
+    // Verificar token
+    const decoded = verifyToken(resetToken);
+
+    // Buscar usuario con token válido
+    const user = await User.findOne({
+      email: decoded.userId,
+      passwordResetToken: resetToken,
+      passwordResetTokenExpiry: { $gt: Date.now() }, // Token no expirado
+    }).select('+passwordResetToken');
+
+    if (!user) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    // Hash de la nueva contraseña
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Actualizar contraseña y limpiar tokens de recuperación
+    user.password = hashedPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpiry = undefined;
+    await user.save();
+
+    return {
+      message: 'Password reset successfully',
+    };
+  } catch (error) {
+    throw new Error(`Error resetting password: ${error.message}`);
   }
 };

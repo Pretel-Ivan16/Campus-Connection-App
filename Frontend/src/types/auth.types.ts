@@ -1,0 +1,44 @@
+export type User = {
+  userId?: string;
+  email: string;
+  name?: string;
+  faculty?: string;
+  isVerified?: boolean;
+  role?: 'user' | 'admin';
+  createdAt?: string;
+};
+
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type RegisterRequest = {
+  email: string;
+  password: string;
+  name: string;
+  faculty?: string;
+};
+
+export type AuthResponse = {
+  token: string;
+  userId: string;
+  email: string;
+  isVerified?: boolean;
+  name?: string;
+  role?: 'user' | 'admin';
+  message?: string;
+};
+
+export type AuthContextType = {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string, faculty?: string) => Promise<void>;
+  verifyEmailToken: (emailToken: string) => Promise<any>;
+  logout: () => void;
+  clearError: () => void;
+};
