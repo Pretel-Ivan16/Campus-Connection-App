@@ -9,7 +9,7 @@ Plataforma de foro universitario para conectar estudiantes, compartir publicacio
 
 ---
 
-## 🎨 Paleta de Colores
+## Paleta de Colores
 
 **Tema Oscuro Moderno:**
 
@@ -23,7 +23,7 @@ Tipografía: EB Garamond + Inter
 
 ---
 
-## ⚡ Inicio Rápido
+## Inicio Rápido
 
 ```bash
 # 1. Clonar
@@ -58,7 +58,7 @@ VITE_API_URL=http://localhost:5000
 
 ---
 
-## 📝 APIs Principales
+## APIs Principales
 
 | Endpoint                        | Método     | Auth | Descripción            |
 | ------------------------------- | ---------- | ---- | ---------------------- |
@@ -74,7 +74,7 @@ VITE_API_URL=http://localhost:5000
 
 ---
 
-## 📁 Estructura
+## Estructura
 
 ```
 Backend/src/
@@ -96,7 +96,7 @@ Frontend/src/
 
 ---
 
-## ✨ Características
+## Características
 
 ✅ Autenticación JWT + verificación email  
 ✅ CRUD posts por facultad  
@@ -109,7 +109,7 @@ Frontend/src/
 
 ---
 
-## 📧 Configurar Email (Gmail)
+## Configurar Email (Gmail)
 
 1. En [myaccount.google.com](https://myaccount.google.com)
 2. Seguridad → Contraseñas de aplicación
@@ -118,7 +118,7 @@ Frontend/src/
 
 ---
 
-## 📊 Modelos
+## Modelos
 
 **User**: email, password (hashed), rol, verificado  
 **Post**: título, contenido, autor, facultad, timestamps  
@@ -126,7 +126,7 @@ Frontend/src/
 
 ---
 
-## 🚀 Deployment Vercel (Automático)
+## Deployment Vercel (Automático)
 
 ```bash
 # 1. Push a GitHub
@@ -140,13 +140,4 @@ git push origin main
 
 ---
 
-## 📞 Soporte
-
-- Reportar bugs en Issues
-- Contactar al equipo de desarrollo
-- Revisar logs con `pm2 logs`
-
----
-
-**Última actualización**: 2024-01-15  
 Desarrollado para UTN - Diplomatura en Desarrollo Web Full Stack
