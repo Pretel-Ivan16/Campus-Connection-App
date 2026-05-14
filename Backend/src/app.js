@@ -1,3 +1,5 @@
+// Cargar crypto lo primero para evitar problemas con jsonwebtoken y mongoose
+import crypto from 'crypto';
 import express from 'express';
 import cors from 'cors';
 import healthRoutes from './routes/health.routes.js';
