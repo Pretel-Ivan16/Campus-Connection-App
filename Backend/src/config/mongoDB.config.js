@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { ENVIRONMENT } from './environment.config.js';
+import crypto from 'crypto';
 
 export const connectDB = async () => {
   try {
