@@ -4,7 +4,11 @@
   "main": "Backend/src/server.js",
   "scripts": {
     "start": "node Backend/src/server.js",
-    "dev": "nodemon Backend/src/server.js"
+    "dev": "nodemon Backend/src/server.js",
+    "build": "cd Backend && npm install"
+  },
+  "engines": {
+    "node": "18"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
