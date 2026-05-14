@@ -1,7 +1,16 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios';
 import { storage } from './storage';
 
-const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'https://campus-connection-app-production.up.railway.app/api';
+// Determinar la URL base de la API
+let API_BASE_URL: string;
+
+// Si estamos en desarrollo local, usar localhost
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  API_BASE_URL = 'http://localhost:3000/api';
+} else {
+  // En producción, siempre usar la URL de Railway
+  API_BASE_URL = 'https://campus-connection-app-production.up.railway.app/api';
+}
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
