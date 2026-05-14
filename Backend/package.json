@@ -12,6 +12,9 @@
   "keywords": ["express", "api", "campus"],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "20"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
