@@ -37,7 +37,6 @@ export const FacultyPosts = ({ facultyId }: FacultyPostsProps) => {
           isAdmin={isAdmin}
           isAuthenticated={isAuthenticated}
           isLoading={isLoading}
-          facultyId={facultyId}
           onPostCreated={refetchPosts}
           onCreatePostClick={() => setIsCreateModalOpen(true)}
         />
