@@ -1,3 +1,5 @@
+// Asegurar que crypto está disponible desde el inicio (Mongoose 9.2.1 requirement)
+import crypto from 'crypto';
 import app from './app.js';
 import { connectDB } from './config/mongoDB.config.js';
 import { ENVIRONMENT } from './config/environment.config.js';
