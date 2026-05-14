@@ -9,10 +9,10 @@ const startServer = async () => {
 
     // Start Express server
     app.listen(ENVIRONMENT.port, () => {
-      console.log(`Server running on port ${ENVIRONMENT.port}`);
+      console.log(`✅ Server running on port ${ENVIRONMENT.port}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error.message);
+    console.error('❌ Failed to start server:', error.message);
     process.exit(1);
   }
 };
