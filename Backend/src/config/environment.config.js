@@ -1,12 +1,5 @@
-// En desarrollo, carga desde .env local
-// En producción (Railway), usa las variables de entorno del sistema
-if (process.env.NODE_ENV !== 'production') {
-  import('dotenv').then(({ default: dotenv }) => {
-    dotenv.config();
-  }).catch(() => {
-    // dotenv no disponible, usar process.env directamente
-  });
-}
+// Las variables de entorno se cargan en server.js
+// Aquí solo las leemos desde process.env
 
 export const ENVIRONMENT = {
   port: process.env.PORT || 3000,

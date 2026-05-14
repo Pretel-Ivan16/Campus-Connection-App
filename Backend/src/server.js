@@ -1,5 +1,5 @@
-// Cargar .env PRIMERO, antes de cualquier otra importación
-import 'dotenv/config.js';
+// Cargar .env (solo funciona si existe el archivo, en production falla silenciosamente)
+import 'dotenv/config';
 
 import app from './app.js';
 import { connectDB } from './config/mongoDB.config.js';
