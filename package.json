@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node Backend/src/server.js",
     "dev": "nodemon Backend/src/server.js",
-    "build": "cd Frontend && npm install && npm run build && cd ../Backend && npm install"
+    "build": "npm --prefix Frontend run build"
   },
   "engines": {
     "node": "24.x"
