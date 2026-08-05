@@ -38,9 +38,12 @@ export const registerUser = async (email, password, name, frontendUrl = 'http://
     await newUser.save();
 
     // Enviar email de verificación en background (sin esperar)
-    sendVerificationEmail(email, verificationToken, frontendUrl).catch(err => 
-      console.error('❌ Error enviando email en background:', err.message)
-    );
+    sendVerificationEmail(email, verificationToken, frontendUrl)
+      .then(() => console.log(`✅ Email de verificación enviado a: ${email}`))
+      .catch(err => {
+        console.error('❌ Error enviando email en background:', err.message);
+        console.error('   Stack:', err.stack);
+      });
 
     // Devolver usuario sin password inmediatamente
     return {
