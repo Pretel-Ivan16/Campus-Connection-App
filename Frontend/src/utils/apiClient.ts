@@ -8,8 +8,7 @@ let API_BASE_URL: string;
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
   API_BASE_URL = 'http://localhost:8080/api';
 } else {
-  // En producción, siempre usar la URL de Railway
-  API_BASE_URL = 'https://campus-connection-app-4.onrender.com';
+  API_BASE_URL = 'https://campus-connection-app-4.onrender.com/api';
 }
 
 const apiClient = axios.create({
