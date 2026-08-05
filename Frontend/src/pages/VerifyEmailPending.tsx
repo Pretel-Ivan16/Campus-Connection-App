@@ -1,13 +1,27 @@
+import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/auth.service';
 
 export default function VerifyEmailPending() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle');
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleResend = async () => {
+    if (!user?.email) return;
+    setResendStatus('loading');
+    try {
+      await authService.resendVerification(user.email);
+      setResendStatus('sent');
+    } catch {
+      setResendStatus('error');
+    }
   };
 
   return (
@@ -67,6 +81,16 @@ export default function VerifyEmailPending() {
 
         {/* Buttons */}
         <div className="space-y-3">
+          <button
+            onClick={handleResend}
+            disabled={resendStatus === 'loading' || resendStatus === 'sent'}
+            className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold py-3 rounded-lg transition-colors"
+          >
+            {resendStatus === 'loading' && 'Enviando...'}
+            {resendStatus === 'sent' && '✓ Email reenviado'}
+            {resendStatus === 'error' && 'Error — intentar de nuevo'}
+            {resendStatus === 'idle' && 'Reenviar email de verificación'}
+          </button>
           <button
             onClick={handleLogout}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors"
