@@ -159,4 +159,6 @@ Errors:
  */
 router.post("/reset-password", authController.resetUserPassword);
 
+router.post("/resend-verification", authController.resendVerification);
+
 export default router;
