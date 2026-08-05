@@ -22,8 +22,8 @@ const transformPost = (post) => {
     _id: post._id,
     title: post.title,
     content: post.content,
-    authorId: typeof post.authorId === 'object' ? post.authorId._id : post.authorId,
-    facultyId: typeof post.facultyId === 'object' ? post.facultyId._id : post.facultyId,
+    authorId: post.authorId && typeof post.authorId === 'object' ? post.authorId._id : post.authorId,
+    facultyId: post.facultyId && typeof post.facultyId === 'object' ? post.facultyId._id : post.facultyId,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
   };

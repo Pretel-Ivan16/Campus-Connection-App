@@ -1,5 +1,4 @@
-// Cargar .env (solo funciona si existe el archivo, en production falla silenciosamente)
-import 'dotenv/config';
+// Las variables de entorno son inyectadas por --env-file antes de que se cargue este módulo
 
 import app from './app.js';
 import { connectDB } from './config/mongoDB.config.js';

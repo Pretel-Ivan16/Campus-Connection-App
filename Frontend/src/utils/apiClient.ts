@@ -6,7 +6,7 @@ let API_BASE_URL: string;
 
 // Si estamos en desarrollo local, usar localhost
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-  API_BASE_URL = 'http://localhost:3000/api';
+  API_BASE_URL = 'http://localhost:8080/api';
 } else {
   // En producción, siempre usar la URL de Railway
   API_BASE_URL = 'https://campus-connection-app-production.up.railway.app/api';

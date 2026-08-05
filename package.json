@@ -4,7 +4,7 @@
   "main": "Backend/src/server.js",
   "scripts": {
     "start": "node Backend/src/server.js",
-    "dev": "nodemon Backend/src/server.js",
+    "dev": "nodemon --exec \"node --env-file=Backend/.env\" Backend/src/server.js",
     "build": "npm --prefix Frontend run build"
   },
   "engines": {
