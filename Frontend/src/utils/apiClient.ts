@@ -9,7 +9,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
   API_BASE_URL = 'http://localhost:8080/api';
 } else {
   // En producción, siempre usar la URL de Railway
-  API_BASE_URL = 'https://campus-connection-app-production.up.railway.app/api';
+  API_BASE_URL = 'https://campus-connection-app-4.onrender.com';
 }
 
 const apiClient = axios.create({
