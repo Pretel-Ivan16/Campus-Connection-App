@@ -40,6 +40,14 @@ export const authService = {
     return response.data.data;
   },
 
+  resendVerification: async (email: string): Promise<any> => {
+    const response = await apiClient.post('/auth/resend-verification', {
+      email,
+      frontendUrl: window.location.origin,
+    });
+    return response.data;
+  },
+
   logout: () => {
     // El logout es local, solo limpiar datos
     return Promise.resolve();

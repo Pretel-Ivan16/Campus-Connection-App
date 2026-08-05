@@ -37,13 +37,13 @@ export const registerUser = async (email, password, name, frontendUrl = 'http://
 
     await newUser.save();
 
+    const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
+    console.log(`[VERIFY URL] ${verificationUrl}`);
+
     // Enviar email de verificación en background (sin esperar)
     sendVerificationEmail(email, verificationToken, frontendUrl)
-      .then(() => console.log(`✅ Email de verificación enviado a: ${email}`))
-      .catch(err => {
-        console.error('❌ Error enviando email en background:', err.message);
-        console.error('   Stack:', err.stack);
-      });
+      .then(() => console.log(`[EMAIL OK] Enviado a: ${email}`))
+      .catch(err => console.error(`[EMAIL ERROR] ${err.message}`));
 
     // Devolver usuario sin password inmediatamente
     return {
@@ -195,6 +195,30 @@ export const getUserByEmail = async (email) => {
     };
   } catch (error) {
     throw new Error(`Error getting user: ${error.message}`);
+  }
+};
+
+export const resendVerificationEmail = async (email, frontendUrl = 'http://localhost:5173') => {
+  try {
+    if (!email) throw new Error('Email is required');
+
+    const user = await User.findOne({ email }).select('+verificationToken');
+    if (!user) throw new Error('User not found');
+    if (user.isVerified) throw new Error('Email is already verified');
+
+    const newToken = generateVerificationToken(email);
+    user.verificationToken = newToken;
+    await user.save();
+
+    const verificationUrl = `${frontendUrl}/verify-email/${newToken}`;
+    console.log(`[VERIFY URL] ${verificationUrl}`);
+
+    await sendVerificationEmail(email, newToken, frontendUrl);
+    console.log(`[EMAIL OK] Reenviado a: ${email}`);
+
+    return { message: 'Verification email resent successfully' };
+  } catch (error) {
+    throw new Error(`Error resending verification email: ${error.message}`);
   }
 };
 

@@ -1,4 +1,4 @@
-import { registerUser, verifyUserEmail, loginUser, getUserById, recoverPassword, resetPassword } from '../services/auth.service.js';
+import { registerUser, verifyUserEmail, loginUser, getUserById, recoverPassword, resetPassword, resendVerificationEmail } from '../services/auth.service.js';
 
 /*
 
@@ -213,6 +213,26 @@ export const getProfile = async (req, res, next) => {
  * Body: { email, frontendUrl (opcional) }
 
 */
+export const resendVerification = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+    const frontendUrl = req.body.frontendUrl || req.headers.origin || process.env.FRONTEND_URL || 'http://localhost:5173';
+    const result = await resendVerificationEmail(email, frontendUrl);
+    res.status(200).json({ success: true, data: result, message: result.message });
+  } catch (error) {
+    if (error.message.includes('already verified')) {
+      return res.status(409).json({ success: false, message: 'Email is already verified' });
+    }
+    if (error.message.includes('not found')) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(500).json({ success: false, message: error.message || 'Error resending verification email' });
+  }
+};
+
 export const requestPasswordRecovery = async (req, res, next) => {
   try {
     const { email } = req.body;
