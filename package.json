@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node Backend/src/server.js",
     "dev": "nodemon --exec \"node --env-file=Backend/.env\" Backend/src/server.js",
-    "build": "npm --prefix Frontend run build"
+    "build": "npm --prefix Backend install && npm --prefix Frontend run build",
+    "render-build": "npm --prefix Backend install"
   },
   "engines": {
     "node": "24.x"
