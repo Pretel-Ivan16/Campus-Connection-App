@@ -1,5 +1,10 @@
+import dns from 'dns';
 import nodemailer from 'nodemailer';
 import { ENVIRONMENT } from '../config/environment.config.js';
+
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 // Validar que existan credenciales
 if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
@@ -14,6 +19,7 @@ const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
   port: Number(process.env.EMAIL_PORT || 587),
   secure: process.env.EMAIL_SECURE === 'true' || Number(process.env.EMAIL_PORT || 587) === 465,
+  family: 4,
   auth: {
     user: ENVIRONMENT.emailUser,
     pass: ENVIRONMENT.emailPass,
