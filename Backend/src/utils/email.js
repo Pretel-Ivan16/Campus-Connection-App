@@ -11,7 +11,9 @@ if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
 
 // Crear transporte de email
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
     user: ENVIRONMENT.emailUser,
     pass: ENVIRONMENT.emailPass,
