@@ -2,6 +2,15 @@ import dns from 'dns';
 import nodemailer from 'nodemailer';
 import { ENVIRONMENT } from '../config/environment.config.js';
 
+const SMTP_HOST = process.env.EMAIL_HOST || 'smtp.gmail.com';
+const SMTP_PORT = Number(process.env.EMAIL_PORT || 587);
+const SMTP_SECURE = process.env.EMAIL_SECURE === 'true' || SMTP_PORT === 465;
+const EMAIL_CONNECTION_TIMEOUT_MS = Number(process.env.EMAIL_CONNECTION_TIMEOUT_MS || 10000);
+const EMAIL_GREETING_TIMEOUT_MS = Number(process.env.EMAIL_GREETING_TIMEOUT_MS || 10000);
+const EMAIL_SOCKET_TIMEOUT_MS = Number(process.env.EMAIL_SOCKET_TIMEOUT_MS || 10000);
+const EMAIL_SEND_TIMEOUT_MS = Number(process.env.EMAIL_SEND_TIMEOUT_MS || 12000);
+const EMAIL_SEND_RETRIES = Number(process.env.EMAIL_SEND_RETRIES || 2);
+
 if (typeof dns.setDefaultResultOrder === 'function') {
   dns.setDefaultResultOrder('ipv4first');
 }
@@ -14,23 +23,47 @@ if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
   console.error('   Verifica que tu archivo .env esté en: Backend/.env');
 }
 
-// Crear transporte de email
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: Number(process.env.EMAIL_PORT || 587),
-  secure: process.env.EMAIL_SECURE === 'true' || Number(process.env.EMAIL_PORT || 587) === 465,
-  family: 4,
-  connectionTimeout: Number(process.env.EMAIL_CONNECTION_TIMEOUT_MS || 10000),
-  greetingTimeout: Number(process.env.EMAIL_GREETING_TIMEOUT_MS || 10000),
-  socketTimeout: Number(process.env.EMAIL_SOCKET_TIMEOUT_MS || 10000),
-  auth: {
-    user: ENVIRONMENT.emailUser,
-    pass: ENVIRONMENT.emailPass,
-  },
-});
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const sendMailWithTimeout = async (mailOptions) => {
-  const timeoutMs = Number(process.env.EMAIL_SEND_TIMEOUT_MS || 12000);
+const isRetryableEmailError = (error) => {
+  const retryableCodes = new Set(['ESOCKET', 'ETIMEDOUT', 'ECONNECTION', 'EAI_AGAIN', 'ENETUNREACH']);
+  const message = String(error?.message || '').toLowerCase();
+  return retryableCodes.has(error?.code) || message.includes('timeout') || message.includes('enetunreach');
+};
+
+const createTransporter = async (forceResolvedIpv4 = false) => {
+  const transportOptions = {
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE,
+    family: 4,
+    connectionTimeout: EMAIL_CONNECTION_TIMEOUT_MS,
+    greetingTimeout: EMAIL_GREETING_TIMEOUT_MS,
+    socketTimeout: EMAIL_SOCKET_TIMEOUT_MS,
+    auth: {
+      user: ENVIRONMENT.emailUser,
+      pass: ENVIRONMENT.emailPass,
+    },
+  };
+
+  if (forceResolvedIpv4) {
+    try {
+      const ipv4Results = await dns.promises.resolve4(SMTP_HOST);
+      if (ipv4Results.length > 0) {
+        transportOptions.host = ipv4Results[0];
+        // Usamos SNI para que TLS valide contra el hostname real y no la IP.
+        transportOptions.tls = { servername: SMTP_HOST };
+      }
+    } catch (dnsError) {
+      console.warn(`[EMAIL WARN] No se pudo resolver IPv4 para ${SMTP_HOST}: ${dnsError.message}`);
+    }
+  }
+
+  return nodemailer.createTransport(transportOptions);
+};
+
+const sendMailWithTimeout = async (mailOptions, forceResolvedIpv4 = false) => {
+  const transporter = await createTransporter(forceResolvedIpv4);
   let timeoutId;
 
   try {
@@ -38,8 +71,8 @@ const sendMailWithTimeout = async (mailOptions) => {
       transporter.sendMail(mailOptions),
       new Promise((_, reject) => {
         timeoutId = setTimeout(() => {
-          reject(new Error(`Email send timed out after ${timeoutMs}ms`));
-        }, timeoutMs);
+          reject(new Error(`Email send timed out after ${EMAIL_SEND_TIMEOUT_MS}ms`));
+        }, EMAIL_SEND_TIMEOUT_MS);
       }),
     ]);
   } finally {
@@ -47,6 +80,29 @@ const sendMailWithTimeout = async (mailOptions) => {
       clearTimeout(timeoutId);
     }
   }
+};
+
+const sendMailWithRetry = async (mailOptions) => {
+  let lastError;
+
+  for (let attempt = 0; attempt <= EMAIL_SEND_RETRIES; attempt += 1) {
+    const useIpv4Fallback = attempt > 0;
+    try {
+      return await sendMailWithTimeout(mailOptions, useIpv4Fallback);
+    } catch (error) {
+      lastError = error;
+      const canRetry = attempt < EMAIL_SEND_RETRIES && isRetryableEmailError(error);
+      if (!canRetry) {
+        throw error;
+      }
+
+      const nextAttempt = attempt + 2;
+      console.warn(`[EMAIL WARN] Intento ${attempt + 1} fallido (${error.code || 'NO_CODE'}). Reintentando (${nextAttempt}/${EMAIL_SEND_RETRIES + 1})...`);
+      await sleep(400 * (attempt + 1));
+    }
+  }
+
+  throw lastError;
 };
 
 export const sendVerificationEmail = async (
@@ -101,7 +157,7 @@ export const sendVerificationEmail = async (
     console.log('   Para:', email);
     console.log('   Asunto:', mailOptions.subject);
     
-    const info = await sendMailWithTimeout(mailOptions);
+    const info = await sendMailWithRetry(mailOptions);
     
     console.log('✅ Email enviado exitosamente!');
     console.log('   ID:', info.messageId);
@@ -127,7 +183,7 @@ export const sendEmail = async (email, subject, htmlContent) => {
       html: htmlContent,
     };
 
-    await sendMailWithTimeout(mailOptions);
+    await sendMailWithRetry(mailOptions);
   } catch (error) {
     throw new Error(`Error sending email: ${error.message}`);
   }
@@ -188,7 +244,7 @@ export const sendPasswordRecoveryEmail = async (
     console.log('   Para:', email);
     console.log('   Asunto:', mailOptions.subject);
     
-    const info = await sendMailWithTimeout(mailOptions);
+    const info = await sendMailWithRetry(mailOptions);
     
     console.log('✅ Email de recuperación enviado exitosamente!');
     console.log('   ID:', info.messageId);
@@ -207,7 +263,17 @@ export const verifyEmailConnection = async () => {
       throw new Error('Email credentials are not configured');
     }
 
-    await transporter.verify();
+    const transporter = await createTransporter(false);
+    try {
+      await transporter.verify();
+    } catch (firstError) {
+      if (!isRetryableEmailError(firstError)) {
+        throw firstError;
+      }
+
+      const fallbackTransporter = await createTransporter(true);
+      await fallbackTransporter.verify();
+    }
     console.log('Email service is ready');
     return true;
   } catch (error) {
