@@ -5,11 +5,16 @@ import { ENVIRONMENT } from '../config/environment.config.js';
 const SMTP_HOST = process.env.EMAIL_HOST || 'smtp.gmail.com';
 const SMTP_PORT = Number(process.env.EMAIL_PORT || 587);
 const SMTP_SECURE = process.env.EMAIL_SECURE === 'true' || SMTP_PORT === 465;
+const SMTP_BACKUP_HOST = process.env.EMAIL_BACKUP_HOST;
+const SMTP_BACKUP_PORT = Number(process.env.EMAIL_BACKUP_PORT || 587);
+const SMTP_BACKUP_SECURE = process.env.EMAIL_BACKUP_SECURE === 'true' || SMTP_BACKUP_PORT === 465;
 const EMAIL_CONNECTION_TIMEOUT_MS = Number(process.env.EMAIL_CONNECTION_TIMEOUT_MS || 10000);
 const EMAIL_GREETING_TIMEOUT_MS = Number(process.env.EMAIL_GREETING_TIMEOUT_MS || 10000);
 const EMAIL_SOCKET_TIMEOUT_MS = Number(process.env.EMAIL_SOCKET_TIMEOUT_MS || 10000);
 const EMAIL_SEND_TIMEOUT_MS = Number(process.env.EMAIL_SEND_TIMEOUT_MS || 12000);
 const EMAIL_SEND_RETRIES = Number(process.env.EMAIL_SEND_RETRIES || 2);
+const EMAIL_BACKUP_USER = process.env.EMAIL_BACKUP_USER;
+const EMAIL_BACKUP_PASS = process.env.EMAIL_BACKUP_PASS;
 
 if (typeof dns.setDefaultResultOrder === 'function') {
   dns.setDefaultResultOrder('ipv4first');
@@ -23,6 +28,27 @@ if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
   console.error('   Verifica que tu archivo .env esté en: Backend/.env');
 }
 
+const SMTP_PROVIDERS = [
+  {
+    name: 'primary',
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE,
+    user: ENVIRONMENT.emailUser,
+    pass: ENVIRONMENT.emailPass,
+  },
+  SMTP_BACKUP_HOST
+    ? {
+        name: 'backup',
+        host: SMTP_BACKUP_HOST,
+        port: SMTP_BACKUP_PORT,
+        secure: SMTP_BACKUP_SECURE,
+        user: EMAIL_BACKUP_USER || ENVIRONMENT.emailUser,
+        pass: EMAIL_BACKUP_PASS || ENVIRONMENT.emailPass,
+      }
+    : null,
+].filter(Boolean);
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const isRetryableEmailError = (error) => {
@@ -31,39 +57,39 @@ const isRetryableEmailError = (error) => {
   return retryableCodes.has(error?.code) || message.includes('timeout') || message.includes('enetunreach');
 };
 
-const createTransporter = async (forceResolvedIpv4 = false) => {
+const createTransporter = async (provider, forceResolvedIpv4 = false) => {
   const transportOptions = {
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_SECURE,
+    host: provider.host,
+    port: provider.port,
+    secure: provider.secure,
     family: 4,
     connectionTimeout: EMAIL_CONNECTION_TIMEOUT_MS,
     greetingTimeout: EMAIL_GREETING_TIMEOUT_MS,
     socketTimeout: EMAIL_SOCKET_TIMEOUT_MS,
     auth: {
-      user: ENVIRONMENT.emailUser,
-      pass: ENVIRONMENT.emailPass,
+      user: provider.user,
+      pass: provider.pass,
     },
   };
 
   if (forceResolvedIpv4) {
     try {
-      const ipv4Results = await dns.promises.resolve4(SMTP_HOST);
+      const ipv4Results = await dns.promises.resolve4(provider.host);
       if (ipv4Results.length > 0) {
         transportOptions.host = ipv4Results[0];
         // Usamos SNI para que TLS valide contra el hostname real y no la IP.
-        transportOptions.tls = { servername: SMTP_HOST };
+        transportOptions.tls = { servername: provider.host };
       }
     } catch (dnsError) {
-      console.warn(`[EMAIL WARN] No se pudo resolver IPv4 para ${SMTP_HOST}: ${dnsError.message}`);
+      console.warn(`[EMAIL WARN] No se pudo resolver IPv4 para ${provider.host}: ${dnsError.message}`);
     }
   }
 
   return nodemailer.createTransport(transportOptions);
 };
 
-const sendMailWithTimeout = async (mailOptions, forceResolvedIpv4 = false) => {
-  const transporter = await createTransporter(forceResolvedIpv4);
+const sendMailWithTimeout = async (mailOptions, provider, forceResolvedIpv4 = false) => {
+  const transporter = await createTransporter(provider, forceResolvedIpv4);
   let timeoutId;
 
   try {
@@ -83,22 +109,35 @@ const sendMailWithTimeout = async (mailOptions, forceResolvedIpv4 = false) => {
 };
 
 const sendMailWithRetry = async (mailOptions) => {
-  let lastError;
+  let lastError = null;
 
-  for (let attempt = 0; attempt <= EMAIL_SEND_RETRIES; attempt += 1) {
-    const useIpv4Fallback = attempt > 0;
-    try {
-      return await sendMailWithTimeout(mailOptions, useIpv4Fallback);
-    } catch (error) {
-      lastError = error;
-      const canRetry = attempt < EMAIL_SEND_RETRIES && isRetryableEmailError(error);
-      if (!canRetry) {
+  for (let providerIndex = 0; providerIndex < SMTP_PROVIDERS.length; providerIndex += 1) {
+    const provider = SMTP_PROVIDERS[providerIndex];
+
+    for (let attempt = 0; attempt <= EMAIL_SEND_RETRIES; attempt += 1) {
+      const useIpv4Fallback = attempt > 0;
+      try {
+        return await sendMailWithTimeout(mailOptions, provider, useIpv4Fallback);
+      } catch (error) {
+        lastError = error;
+        const canRetryCurrentProvider = attempt < EMAIL_SEND_RETRIES && isRetryableEmailError(error);
+
+        if (canRetryCurrentProvider) {
+          const nextAttempt = attempt + 2;
+          console.warn(`[EMAIL WARN] ${provider.name} intento ${attempt + 1} fallido (${error.code || 'NO_CODE'}). Reintentando (${nextAttempt}/${EMAIL_SEND_RETRIES + 1})...`);
+          await sleep(400 * (attempt + 1));
+          continue;
+        }
+
+        const hasNextProvider = providerIndex < SMTP_PROVIDERS.length - 1;
+        if (hasNextProvider && isRetryableEmailError(error)) {
+          const nextProvider = SMTP_PROVIDERS[providerIndex + 1];
+          console.warn(`[EMAIL WARN] ${provider.name} agotado. Probando proveedor ${nextProvider.name}...`);
+          break;
+        }
+
         throw error;
       }
-
-      const nextAttempt = attempt + 2;
-      console.warn(`[EMAIL WARN] Intento ${attempt + 1} fallido (${error.code || 'NO_CODE'}). Reintentando (${nextAttempt}/${EMAIL_SEND_RETRIES + 1})...`);
-      await sleep(400 * (attempt + 1));
     }
   }
 
@@ -263,7 +302,7 @@ export const verifyEmailConnection = async () => {
       throw new Error('Email credentials are not configured');
     }
 
-    const transporter = await createTransporter(false);
+    const transporter = await createTransporter(SMTP_PROVIDERS[0], false);
     try {
       await transporter.verify();
     } catch (firstError) {
@@ -271,8 +310,13 @@ export const verifyEmailConnection = async () => {
         throw firstError;
       }
 
-      const fallbackTransporter = await createTransporter(true);
+      const fallbackTransporter = await createTransporter(SMTP_PROVIDERS[0], true);
       await fallbackTransporter.verify();
+
+      if (SMTP_PROVIDERS.length > 1) {
+        const backupTransporter = await createTransporter(SMTP_PROVIDERS[1], false);
+        await backupTransporter.verify();
+      }
     }
     console.log('Email service is ready');
     return true;
