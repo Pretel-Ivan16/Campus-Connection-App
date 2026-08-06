@@ -20,11 +20,34 @@ const transporter = nodemailer.createTransport({
   port: Number(process.env.EMAIL_PORT || 587),
   secure: process.env.EMAIL_SECURE === 'true' || Number(process.env.EMAIL_PORT || 587) === 465,
   family: 4,
+  connectionTimeout: Number(process.env.EMAIL_CONNECTION_TIMEOUT_MS || 10000),
+  greetingTimeout: Number(process.env.EMAIL_GREETING_TIMEOUT_MS || 10000),
+  socketTimeout: Number(process.env.EMAIL_SOCKET_TIMEOUT_MS || 10000),
   auth: {
     user: ENVIRONMENT.emailUser,
     pass: ENVIRONMENT.emailPass,
   },
 });
+
+const sendMailWithTimeout = async (mailOptions) => {
+  const timeoutMs = Number(process.env.EMAIL_SEND_TIMEOUT_MS || 12000);
+  let timeoutId;
+
+  try {
+    return await Promise.race([
+      transporter.sendMail(mailOptions),
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(`Email send timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+};
 
 export const sendVerificationEmail = async (
   email,
@@ -78,7 +101,7 @@ export const sendVerificationEmail = async (
     console.log('   Para:', email);
     console.log('   Asunto:', mailOptions.subject);
     
-    const info = await transporter.sendMail(mailOptions);
+    const info = await sendMailWithTimeout(mailOptions);
     
     console.log('✅ Email enviado exitosamente!');
     console.log('   ID:', info.messageId);
@@ -104,7 +127,7 @@ export const sendEmail = async (email, subject, htmlContent) => {
       html: htmlContent,
     };
 
-    await transporter.sendMail(mailOptions);
+    await sendMailWithTimeout(mailOptions);
   } catch (error) {
     throw new Error(`Error sending email: ${error.message}`);
   }
@@ -165,7 +188,7 @@ export const sendPasswordRecoveryEmail = async (
     console.log('   Para:', email);
     console.log('   Asunto:', mailOptions.subject);
     
-    const info = await transporter.sendMail(mailOptions);
+    const info = await sendMailWithTimeout(mailOptions);
     
     console.log('✅ Email de recuperación enviado exitosamente!');
     console.log('   ID:', info.messageId);
