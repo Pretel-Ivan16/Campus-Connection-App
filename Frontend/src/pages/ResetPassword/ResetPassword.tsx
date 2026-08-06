@@ -60,7 +60,7 @@ export default function ResetPassword() {
         {error && <ErrorAlert message={error} />}
         {success && <SuccessAlert message={success} />}
 
-        <form onSubmit={(e) => handleSubmit(token, e)} className="space-y-5">
+        <form onSubmit={(e) => handleSubmit(token, e)} className="space-y-5" translate="no">
           <TextInput
             id="newPassword"
             label="Nueva Contraseña"

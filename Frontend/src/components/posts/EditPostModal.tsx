@@ -79,7 +79,7 @@ export const EditPostModal = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" translate="no">
           {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-white mb-2">

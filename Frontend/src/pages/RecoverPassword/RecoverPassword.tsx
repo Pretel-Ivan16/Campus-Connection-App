@@ -64,7 +64,7 @@ export default function RecoverPassword() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5" translate="no">
           <TextInput
             id="recovery-email"
             label="Email"

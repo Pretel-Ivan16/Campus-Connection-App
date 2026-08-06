@@ -17,7 +17,7 @@ export default function Login() {
 
         {formError && <ErrorAlert message={formError} />}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5" translate="no">
           <TextInput
             id="email"
             label="Email"

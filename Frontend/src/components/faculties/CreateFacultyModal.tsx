@@ -64,7 +64,7 @@ export const CreateFacultyModal = ({ isOpen, onClose, onSubmit, isLoading }: Cre
         </div>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4" translate="no">
           {/* Nombre */}
           <div>
             <label htmlFor="name" className="block text-sm font-semibold text-white mb-2">
