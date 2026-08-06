@@ -2,8 +2,9 @@ import User from '../models/user.model.js';
 import { hashPassword, comparePassword } from '../utils/hash.js';
 import { generateToken, generateVerificationToken, verifyToken } from '../utils/jwt.js';
 import { sendVerificationEmail, sendPasswordRecoveryEmail } from '../utils/email.js';
+import { ENVIRONMENT } from '../config/environment.config.js';
 
-export const registerUser = async (email, password, name, frontendUrl = 'http://localhost:8080') => {
+export const registerUser = async (email, password, name, frontendUrl = ENVIRONMENT.frontendUrl || 'http://localhost:5173') => {
   try {
     if (!email || !password || !name) {
       throw new Error('Email, password, and name are required');
@@ -40,10 +41,9 @@ export const registerUser = async (email, password, name, frontendUrl = 'http://
     const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
     console.log(`[VERIFY URL] ${verificationUrl}`);
 
-    // Enviar email de verificación en background (sin esperar)
-    sendVerificationEmail(email, verificationToken, frontendUrl)
-      .then(() => console.log(`[EMAIL OK] Enviado a: ${email}`))
-      .catch(err => console.error(`[EMAIL ERROR] ${err.message}`));
+    // Esperar el envío para evitar que se cancele en runtime serverless
+    await sendVerificationEmail(email, verificationToken, frontendUrl);
+    console.log(`[EMAIL OK] Enviado a: ${email}`);
 
     // Devolver usuario sin password inmediatamente
     return {
@@ -222,7 +222,7 @@ export const resendVerificationEmail = async (email, frontendUrl = 'http://local
   }
 };
 
-export const recoverPassword = async (email, frontendUrl = 'http://localhost:3000') => {
+export const recoverPassword = async (email, frontendUrl = ENVIRONMENT.frontendUrl || 'http://localhost:5173') => {
   try {
     if (!email) {
       throw new Error('Email is required');
@@ -243,10 +243,8 @@ export const recoverPassword = async (email, frontendUrl = 'http://localhost:300
     user.passwordResetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     await user.save();
 
-    // Enviar email de recuperación en background (sin esperar)
-    sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl).catch(err => 
-      console.error('❌ Error enviando email en background:', err.message)
-    );
+    // Esperar el envío para evitar cancelaciones en deploy
+    await sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl);
 
     return {
       message: 'Password recovery email sent successfully. Check your inbox.',

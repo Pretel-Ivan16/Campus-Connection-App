@@ -11,9 +11,9 @@ if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
 
 // Crear transporte de email
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 487,
-  secure: false,
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: Number(process.env.EMAIL_PORT || 587),
+  secure: process.env.EMAIL_SECURE === 'true' || Number(process.env.EMAIL_PORT || 587) === 465,
   auth: {
     user: ENVIRONMENT.emailUser,
     pass: ENVIRONMENT.emailPass,
@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport({
 export const sendVerificationEmail = async (
   email,
   verificationToken,
-  frontendUrl = 'http://localhost:8080'
+  frontendUrl = ENVIRONMENT.frontendUrl || 'http://localhost:5173'
 ) => {
   try {
     if (!email || !verificationToken) {
