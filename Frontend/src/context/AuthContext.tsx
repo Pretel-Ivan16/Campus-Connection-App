@@ -66,7 +66,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const response = await authService.register(email, password, name, faculty);
 
-      storage.saveToken(response.token);
       const userData: User = {
         userId: response.userId,
         email: response.email,
@@ -76,7 +75,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
       storage.saveUser(userData);
 
-      setToken(response.token);
+      if (response.token) {
+        storage.saveToken(response.token);
+        setToken(response.token);
+      } else {
+        storage.removeToken();
+        setToken(null);
+      }
       setUser(userData);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Error al registrarse';

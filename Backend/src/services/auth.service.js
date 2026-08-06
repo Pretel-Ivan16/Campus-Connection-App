@@ -41,9 +41,13 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
     const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
     console.log(`[VERIFY URL] ${verificationUrl}`);
 
-    // Esperar el envío para evitar que se cancele en runtime serverless
-    await sendVerificationEmail(email, verificationToken, frontendUrl);
-    console.log(`[EMAIL OK] Enviado a: ${email}`);
+    // Intentar enviar el email, pero no fallar el registro si el SMTP está caído
+    try {
+      await sendVerificationEmail(email, verificationToken, frontendUrl);
+      console.log(`[EMAIL OK] Enviado a: ${email}`);
+    } catch (emailError) {
+      console.error(`[EMAIL WARN] No se pudo enviar el correo a ${email}: ${emailError.message}`);
+    }
 
     // Devolver usuario sin password inmediatamente
     return {
@@ -243,8 +247,12 @@ export const recoverPassword = async (email, frontendUrl = ENVIRONMENT.frontendU
     user.passwordResetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     await user.save();
 
-    // Esperar el envío para evitar cancelaciones en deploy
-    await sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl);
+    // Intentar enviar el email, pero no romper la solicitud si el SMTP falla
+    try {
+      await sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl);
+    } catch (emailError) {
+      console.error(`❌ Error enviando email de recuperación: ${emailError.message}`);
+    }
 
     return {
       message: 'Password recovery email sent successfully. Check your inbox.',

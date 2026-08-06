@@ -3,12 +3,22 @@ const USER_KEY = 'authUser';
 
 export const storage = {
   // Token
-  saveToken: (token: string) => {
+  saveToken: (token: string | null | undefined) => {
+    if (!token || token === 'undefined' || token === 'null') {
+      localStorage.removeItem(TOKEN_KEY);
+      return;
+    }
+
     localStorage.setItem(TOKEN_KEY, token);
   },
 
   getToken: (): string | null => {
-    return localStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token || token === 'undefined' || token === 'null') {
+      return null;
+    }
+
+    return token;
   },
 
   removeToken: () => {
