@@ -12,6 +12,11 @@ const startServer = async () => {
     // Start Express server
     app.listen(ENVIRONMENT.port, () => {
       console.log(`✅ Server running on port ${ENVIRONMENT.port}`);
+      if (ENVIRONMENT.disableEmailVerification) {
+        console.warn('⚠️  Email verification is DISABLED (DISABLE_EMAIL_VERIFICATION=true)');
+      } else {
+        console.log('✅ Email verification is ENABLED');
+      }
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
