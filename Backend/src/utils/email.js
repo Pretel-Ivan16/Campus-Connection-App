@@ -12,14 +12,12 @@ if (!ENVIRONMENT.emailUser || !ENVIRONMENT.emailPass) {
 // Crear transporte de email
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  port: 487,
+  secure: false,
   auth: {
     user: ENVIRONMENT.emailUser,
     pass: ENVIRONMENT.emailPass,
   },
-  connectionTimeout: 10000,
-  socketTimeout: 10000,
 });
 
 export const sendVerificationEmail = async (
