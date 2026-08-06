@@ -17,13 +17,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const savedToken = storage.getToken();
     const savedUser = storage.getUser();
 
-    if (savedToken && savedUser) {
+    const userWithRole = savedUser
+      ? { ...savedUser, role: savedUser.role || 'user' }
+      : null;
+
+    if (savedToken && userWithRole) {
       setToken(savedToken);
-      // Asegurar que el usuario siempre tenga un role
-      const userWithRole = {
-        ...savedUser,
-        role: savedUser.role || 'user',
-      };
+    }
+    if (userWithRole) {
       setUser(userWithRole);
     }
 
