@@ -28,7 +28,33 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
     // Validar que email no exista
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new Error('Email is already registered');
+      if (existingUser.isVerified) {
+        throw new Error('Email is already registered');
+      }
+
+      const refreshedVerificationToken = generateVerificationToken(email);
+      existingUser.verificationToken = refreshedVerificationToken;
+      await existingUser.save();
+
+      const verificationUrl = `${frontendUrl}/verify-email/${refreshedVerificationToken}`;
+      console.log(`[VERIFY URL] ${verificationUrl}`);
+
+      runInBackground(
+        () => sendVerificationEmail(email, refreshedVerificationToken, frontendUrl),
+        `[EMAIL OK] Reenviado a: ${email}`,
+        `[EMAIL WARN] No se pudo reenviar el correo a ${email}`
+      );
+
+      return {
+        statusCode: 200,
+        userId: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email,
+        isVerified: existingUser.isVerified,
+        role: existingUser.role,
+        emailQueued: true,
+        message: 'This email is already registered but not verified. We started a new verification email process.',
+      };
     }
 
     // Hash de la contraseña
@@ -65,6 +91,7 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
 
     // Devolver usuario sin password inmediatamente
     return {
+      statusCode: 201,
       userId: newUser._id,
       name: newUser.name,
       email: newUser.email,

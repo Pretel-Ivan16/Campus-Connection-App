@@ -41,11 +41,13 @@ export const register = async (req, res, next) => {
 
     // Registrar usuario
     const result = await registerUser(email, password, name, frontendUrl);
+    const statusCode = result.statusCode || 201;
+    const { statusCode: _ignoredStatusCode, ...responseData } = result;
 
-    res.status(201).json({
+    res.status(statusCode).json({
       success: true,
-      data: result,
-      message: result.message,
+      data: responseData,
+      message: responseData.message,
     });
   } catch (error) {
     // Errores específicos
