@@ -4,6 +4,21 @@ import { generateToken, generateVerificationToken, verifyToken } from '../utils/
 import { sendVerificationEmail, sendPasswordRecoveryEmail } from '../utils/email.js';
 import { ENVIRONMENT } from '../config/environment.config.js';
 
+const runInBackground = async (operation, onSuccessLog, onErrorLog) => {
+  Promise.resolve()
+    .then(operation)
+    .then(() => {
+      if (onSuccessLog) {
+        console.log(onSuccessLog);
+      }
+    })
+    .catch((error) => {
+      if (onErrorLog) {
+        console.error(`${onErrorLog}: ${error.message}`);
+      }
+    });
+};
+
 export const registerUser = async (email, password, name, frontendUrl = ENVIRONMENT.frontendUrl || 'http://localhost:5173') => {
   try {
     if (!email || !password || !name) {
@@ -41,13 +56,12 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
     const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
     console.log(`[VERIFY URL] ${verificationUrl}`);
 
-    // Intentar enviar el email, pero no fallar el registro si el SMTP está caído
-    try {
-      await sendVerificationEmail(email, verificationToken, frontendUrl);
-      console.log(`[EMAIL OK] Enviado a: ${email}`);
-    } catch (emailError) {
-      console.error(`[EMAIL WARN] No se pudo enviar el correo a ${email}: ${emailError.message}`);
-    }
+    // Enviamos en segundo plano para no bloquear la respuesta del registro.
+    runInBackground(
+      () => sendVerificationEmail(email, verificationToken, frontendUrl),
+      `[EMAIL OK] Enviado a: ${email}`,
+      `[EMAIL WARN] No se pudo enviar el correo a ${email}`
+    );
 
     // Devolver usuario sin password inmediatamente
     return {
@@ -217,20 +231,15 @@ export const resendVerificationEmail = async (email, frontendUrl = 'http://local
     const verificationUrl = `${frontendUrl}/verify-email/${newToken}`;
     console.log(`[VERIFY URL] ${verificationUrl}`);
 
-    let emailSent = true;
-    try {
-      await sendVerificationEmail(email, newToken, frontendUrl);
-      console.log(`[EMAIL OK] Reenviado a: ${email}`);
-    } catch (emailError) {
-      emailSent = false;
-      console.error(`[EMAIL WARN] No se pudo reenviar el correo a ${email}: ${emailError.message}`);
-    }
+    runInBackground(
+      () => sendVerificationEmail(email, newToken, frontendUrl),
+      `[EMAIL OK] Reenviado a: ${email}`,
+      `[EMAIL WARN] No se pudo reenviar el correo a ${email}`
+    );
 
     return {
-      emailSent,
-      message: emailSent
-        ? 'Verification email resent successfully'
-        : 'Account updated, but verification email could not be sent right now. Please try again later.',
+      emailQueued: true,
+      message: 'Verification email process started. Please check your inbox in a few minutes.',
     };
   } catch (error) {
     throw new Error(`Error resending verification email: ${error.message}`);
@@ -258,12 +267,12 @@ export const recoverPassword = async (email, frontendUrl = ENVIRONMENT.frontendU
     user.passwordResetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     await user.save();
 
-    // Intentar enviar el email, pero no romper la solicitud si el SMTP falla
-    try {
-      await sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl);
-    } catch (emailError) {
-      console.error(`❌ Error enviando email de recuperación: ${emailError.message}`);
-    }
+    // En segundo plano para evitar timeouts y devolver respuesta inmediata.
+    runInBackground(
+      () => sendPasswordRecoveryEmail(email, recoveryToken, frontendUrl),
+      `[EMAIL OK] Recuperación enviada a: ${email}`,
+      `❌ Error enviando email de recuperación a ${email}`
+    );
 
     return {
       message: 'Password recovery email sent successfully. Check your inbox.',
