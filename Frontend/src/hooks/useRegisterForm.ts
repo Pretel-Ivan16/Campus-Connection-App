@@ -85,10 +85,7 @@ export const useRegisterForm = () => {
 
     try {
       await registerUser(email, password, username);
-      // Solo navega si el registro es exitoso
-      setTimeout(() => {
-        navigate('/home');
-      }, 100);
+      navigate('/verify-email-pending');
     } catch (err: any) {
       const errorMessage = err?.response?.data?.message || err?.message || 'Error al registrarse. Intenta de nuevo.';
       setFormError(errorMessage);
