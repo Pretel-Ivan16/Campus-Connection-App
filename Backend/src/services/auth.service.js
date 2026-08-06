@@ -217,10 +217,21 @@ export const resendVerificationEmail = async (email, frontendUrl = 'http://local
     const verificationUrl = `${frontendUrl}/verify-email/${newToken}`;
     console.log(`[VERIFY URL] ${verificationUrl}`);
 
-    await sendVerificationEmail(email, newToken, frontendUrl);
-    console.log(`[EMAIL OK] Reenviado a: ${email}`);
+    let emailSent = true;
+    try {
+      await sendVerificationEmail(email, newToken, frontendUrl);
+      console.log(`[EMAIL OK] Reenviado a: ${email}`);
+    } catch (emailError) {
+      emailSent = false;
+      console.error(`[EMAIL WARN] No se pudo reenviar el correo a ${email}: ${emailError.message}`);
+    }
 
-    return { message: 'Verification email resent successfully' };
+    return {
+      emailSent,
+      message: emailSent
+        ? 'Verification email resent successfully'
+        : 'Account updated, but verification email could not be sent right now. Please try again later.',
+    };
   } catch (error) {
     throw new Error(`Error resending verification email: ${error.message}`);
   }

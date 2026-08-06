@@ -11,16 +11,29 @@ import errorMiddleware from './middlewares/error.middleware.js';
 
 const app = express();
 
+const envOrigins = (process.env.CORS_ORIGINS || '')
+	.split(',')
+	.map((origin) => origin.trim())
+	.filter(Boolean);
+
 const allowedOrigins = [
 	ENVIRONMENT.frontendUrl,
+	...envOrigins,
 	'http://localhost:5173',
 	'http://localhost:3000',
 	'https://campus-connection-app-1.vercel.app',
 ].filter(Boolean);
 
+const allowedOriginPatterns = [
+	/^https:\/\/campus-connection-app-.*\.vercel\.app$/,
+];
+
 const corsOptions = {
 	origin: (origin, callback) => {
-		if (!origin || allowedOrigins.includes(origin)) {
+		const isAllowedByList = allowedOrigins.includes(origin);
+		const isAllowedByPattern = allowedOriginPatterns.some((pattern) => pattern.test(origin || ''));
+
+		if (!origin || isAllowedByList || isAllowedByPattern) {
 			callback(null, true);
 			return;
 		}
@@ -34,6 +47,7 @@ const corsOptions = {
 
 // Middlewares
 app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
 // Routes
