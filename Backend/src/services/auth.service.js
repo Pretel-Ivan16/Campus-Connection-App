@@ -28,6 +28,22 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
     // Validar que email no exista
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      if (ENVIRONMENT.disableEmailVerification && !existingUser.isVerified) {
+        existingUser.isVerified = true;
+        existingUser.verificationToken = undefined;
+        await existingUser.save();
+
+        return {
+          statusCode: 200,
+          userId: existingUser._id,
+          name: existingUser.name,
+          email: existingUser.email,
+          isVerified: existingUser.isVerified,
+          role: existingUser.role,
+          message: 'Account already existed and is now verified automatically.',
+        };
+      }
+
       if (existingUser.isVerified) {
         throw new Error('Email is already registered');
       }
@@ -60,8 +76,8 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
     // Hash de la contraseña
     const hashedPassword = await hashPassword(password);
 
-    // Generar token de verificación
-    const verificationToken = generateVerificationToken(email);
+    // Generar token de verificación solo si se requiere verificación por email.
+    const verificationToken = ENVIRONMENT.disableEmailVerification ? undefined : generateVerificationToken(email);
 
     // Verificar si existe algún admin en la base de datos
     const adminExists = await User.findOne({ role: 'admin' });
@@ -73,21 +89,23 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
       email,
       password: hashedPassword,
       verificationToken,
-      isVerified: false,
+      isVerified: ENVIRONMENT.disableEmailVerification,
       role: userRole,
     });
 
     await newUser.save();
 
-    const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
-    console.log(`[VERIFY URL] ${verificationUrl}`);
+    if (!ENVIRONMENT.disableEmailVerification) {
+      const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
+      console.log(`[VERIFY URL] ${verificationUrl}`);
 
-    // Enviamos en segundo plano para no bloquear la respuesta del registro.
-    runInBackground(
-      () => sendVerificationEmail(email, verificationToken, frontendUrl),
-      `[EMAIL OK] Enviado a: ${email}`,
-      `[EMAIL WARN] No se pudo enviar el correo a ${email}`
-    );
+      // Enviamos en segundo plano para no bloquear la respuesta del registro.
+      runInBackground(
+        () => sendVerificationEmail(email, verificationToken, frontendUrl),
+        `[EMAIL OK] Enviado a: ${email}`,
+        `[EMAIL WARN] No se pudo enviar el correo a ${email}`
+      );
+    }
 
     // Devolver usuario sin password inmediatamente
     return {
@@ -97,7 +115,9 @@ export const registerUser = async (email, password, name, frontendUrl = ENVIRONM
       email: newUser.email,
       isVerified: newUser.isVerified,
       role: newUser.role,
-      message: 'User registered successfully. Check your email to verify your account.',
+      message: ENVIRONMENT.disableEmailVerification
+        ? 'User registered successfully.'
+        : 'User registered successfully. Check your email to verify your account.',
     };
   } catch (error) {
     throw new Error(`Error registering user: ${error.message}`);
@@ -175,7 +195,7 @@ export const loginUser = async (email, password) => {
     }
 
     // Verificar que el usuario haya verificado su email
-    if (!user.isVerified) {
+    if (!user.isVerified && !ENVIRONMENT.disableEmailVerification) {
       throw new Error('Please verify your email before logging in');
     }
 
@@ -246,6 +266,22 @@ export const getUserByEmail = async (email) => {
 export const resendVerificationEmail = async (email, frontendUrl = 'http://localhost:5173') => {
   try {
     if (!email) throw new Error('Email is required');
+
+    if (ENVIRONMENT.disableEmailVerification) {
+      const user = await User.findOne({ email });
+      if (!user) throw new Error('User not found');
+
+      if (!user.isVerified) {
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        await user.save();
+      }
+
+      return {
+        emailQueued: false,
+        message: 'Email verification is disabled. Account is verified automatically.',
+      };
+    }
 
     const user = await User.findOne({ email }).select('+verificationToken');
     if (!user) throw new Error('User not found');
